@@ -1,0 +1,91 @@
+Name: server
+Host: 0.0.0.0
+Port: 10000
+Mode: debug
+# exposed外网暴露模式，校验用户token
+# backend后端模式，校验ip
+DeployMode: "backend"
+IpWhiteList: 192.168.31.1/24, 192.168.1.1/24
+IM:
+  OnlineTimeout: 20
+  MaxGroupMember: 100
+  MaxSuperGroupMember: 200
+WebSocket:
+  Uri: "/ws"
+  MaxClient: 50000
+  MultiPlatform: 0
+Node:
+  MaxCount: 1024
+  PollingInterval: 15
+Logger:
+  Dir: logs
+  RetainAge: 720
+  RotationAge: 1
+RedisSource:
+  Endpoint: ${REDIS_ENDPOINT}
+  Uri: "/0"
+  MaxIdleConn: 8
+  MaxOpenConn: 16
+  ConnMaxLifeTime: 3600
+  ConnMaxIdleTime: 3600
+MysqlSource:
+  Endpoint: ${MYSQL_ENDPOINT}
+  Uri: "/thk_im?charset=utf8mb4&parseTime=True&loc=Local"
+  MaxIdleConn: 10
+  MaxOpenConn: 20
+  ConnMaxLifeTime: 3600
+  ConnMaxIdleTime: 3600
+Models:
+  - Name: "session"
+    Shards: 5
+  - Name: "user_session"
+    Shards: 5
+  - Name: "session_user"
+    Shards: 5
+  - Name: "session_message"
+    Shards: 5
+  - Name: "user_message"
+    Shards: 5
+  - Name: "object"
+    Shards: 5
+  - Name: "session_object"
+    Shards: 5
+  - Name: "user_online_status"
+    Shards: 1
+ObjectStorage:
+  Endpoint: "http://minio.thkim.com"
+  Bucket: "thk"
+  AK: "7pwGcuomjng4cRKWYPNz"
+  SK: "IzN7VrEKOGIPIEkhvQU6cJepu6bdrNC95BRYslwJ"
+  Region: us-east-1
+Metric:
+  Endpoint: "/metrics"
+  PushGateway: ""
+  PushInterval: 10
+Sdks:
+  - Name: msg-api
+    Endpoint: "http://127.0.0.1:18000"
+#  - Name: user-api
+#    Endpoint: "http://127.0.0.1:18000"
+MsgQueue:
+  Publishers:
+    - Topic: "push_msg"
+      RedisPublisher:
+        MaxQueueLen: 100000
+        RedisSource:
+          Endpoint: ${REDIS_ENDPOINT}
+          Uri: "/0"
+          MaxIdleConn: 2
+          MaxOpenConn: 4
+          ConnMaxLifeTime: 3600
+          ConnMaxIdleTime: 3600
+    - Topic: "save_msg"
+      RedisPublisher:
+        MaxQueueLen: 100000
+        RedisSource:
+          Endpoint: ${REDIS_ENDPOINT}
+          Uri: "/0"
+          MaxIdleConn: 2
+          MaxOpenConn: 4
+          ConnMaxLifeTime: 3600
+          ConnMaxIdleTime: 3600
