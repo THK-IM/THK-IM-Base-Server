@@ -172,7 +172,8 @@ func (app *Context) Init(config *conf.Config) {
 		panic(err)
 	}
 	gin.SetMode(config.Mode)
-	app.httpEngine = gin.Default()
+	httpEngine := gin.Default()
+	app.httpEngine = httpEngine
 	app.config = config
 	app.logger = logger
 	app.redisCache = redisCache
