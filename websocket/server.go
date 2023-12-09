@@ -34,6 +34,7 @@ type Server interface {
 	SetOnClientConnected(f OnClientConnected)
 	SetOnClientClosed(f OnClientClosed)
 	SetOnClientMsgReceived(r OnClientMsgReceived)
+	GetUserClient(uid int64) []Client
 	AddClient(uid int64, client Client) (err error)
 	RemoveClient(uid int64, reason string, client Client) error
 	SendMessage(uid int64, msg string) (err error)
