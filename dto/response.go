@@ -1,8 +1,8 @@
 package dto
 
 import (
-	"github.com/THK-IM/THK-IM-Server/pkg/errorx"
 	"github.com/gin-gonic/gin"
+	"github.com/thk-im/thk-im-base-server/errorx"
 	"net/http"
 )
 
