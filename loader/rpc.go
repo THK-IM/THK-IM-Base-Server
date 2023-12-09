@@ -1,9 +1,9 @@
 package loader
 
 import (
-	"github.com/THK-IM/THK-IM-Server/pkg/conf"
-	"github.com/THK-IM/THK-IM-Server/pkg/rpc"
 	"github.com/sirupsen/logrus"
+	"github.com/thk-im/thk-im-base-server/conf"
+	"github.com/thk-im/thk-im-base-server/rpc"
 )
 
 func LoadSdks(sdkConfigs []conf.Sdk, logger *logrus.Entry) map[string]interface{} {

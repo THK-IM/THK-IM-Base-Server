@@ -3,8 +3,8 @@ package loader
 import (
 	"context"
 	"fmt"
-	"github.com/THK-IM/THK-IM-Base-Server/conf"
 	"github.com/sirupsen/logrus"
+	"github.com/thk-im/thk-im-base-server/conf"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"

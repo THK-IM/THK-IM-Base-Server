@@ -1,7 +1,5 @@
 cloud.google.com/go v0.34.0/go.mod h1:aQUYkXzVsufM+DwF1aE+0xfcU+56JwCaLick0ClmMTw=
 github.com/DataDog/datadog-go v3.2.0+incompatible/go.mod h1:LButxg5PwREeZtORoXG3tL4fMGNddJ+vMq1mwgfaqoQ=
-github.com/THK-IM/THK-IM-Base-Server v0.0.0-20231209041502-de7a55cb73d4 h1:9biW499WxUCAshHLuoUgCqF7oU04bmj6J0qEABzI+0s=
-github.com/THK-IM/THK-IM-Base-Server v0.0.0-20231209041502-de7a55cb73d4/go.mod h1:X4CgeQZZI97N1o9HpNfZI/aNi7npAM2BF7WYFIkVSqc=
 github.com/THK-IM/THK-IM-Server v0.0.0-20231208145610-f5d2d1648cb0 h1:C/kdhIrPymw/4lbySSLGfbZ3Prlhpb8f8bgYPI9/h4A=
 github.com/THK-IM/THK-IM-Server v0.0.0-20231208145610-f5d2d1648cb0/go.mod h1:SHbpxxeKjGDlEsCLTFioSw2hQpr6TuPFZTA/jxlTgkE=
 github.com/alecthomas/template v0.0.0-20160405071501-a0175ee3bccc/go.mod h1:LOuyumcjzFXgccqObfd/Ljyb9UuFJ6TxHnclSeseNhc=

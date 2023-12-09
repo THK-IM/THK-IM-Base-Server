@@ -3,6 +3,7 @@ module github.com/thk-im/thk-im-base-server
 go 1.19
 
 require (
+	github.com/THK-IM/THK-IM-Server v0.0.0-20231208145610-f5d2d1648cb0
 	github.com/bwmarrin/snowflake v0.3.0
 	github.com/gin-gonic/gin v1.9.1
 	github.com/go-resty/resty/v2 v2.10.0

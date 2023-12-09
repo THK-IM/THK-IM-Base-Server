@@ -2,9 +2,9 @@ package loader
 
 import (
 	"fmt"
-	"github.com/THK-IM/THK-IM-Base-Server/conf"
-	"github.com/THK-IM/THK-IM-Base-Server/mq"
 	"github.com/sirupsen/logrus"
+	"github.com/thk-im/thk-im-base-server/conf"
+	"github.com/thk-im/thk-im-base-server/mq"
 )
 
 func LoadPublishers(pubConfigs []*conf.Publisher, nodeId int64, logger *logrus.Entry) map[string]mq.Publisher {

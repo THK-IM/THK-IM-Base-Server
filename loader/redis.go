@@ -2,8 +2,8 @@ package loader
 
 import (
 	"fmt"
-	"github.com/THK-IM/THK-IM-Base-Server/conf"
 	"github.com/redis/go-redis/v9"
+	"github.com/thk-im/thk-im-base-server/conf"
 	"time"
 )
 

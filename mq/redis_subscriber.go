@@ -3,9 +3,9 @@ package mq
 import (
 	"context"
 	"fmt"
-	"github.com/THK-IM/THK-IM-Base-Server/conf"
 	"github.com/redis/go-redis/v9"
 	"github.com/sirupsen/logrus"
+	"github.com/thk-im/thk-im-base-server/conf"
 	"time"
 )
 
