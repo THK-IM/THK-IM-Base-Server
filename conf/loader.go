@@ -10,6 +10,10 @@ var consulEndpoint = flag.String("config-consul-endpoint", "", "consul address")
 var consulKey = flag.String("config-consul-key", "", "consul key")
 var configFile = flag.String("config-file", "etc/server.yaml", "the config file")
 
+func init() {
+	flag.Parse()
+}
+
 func getConsul() (endpoint, key string) {
 	if *consulEndpoint != "" && *consulKey != "" {
 		return *consulEndpoint, *consulKey
