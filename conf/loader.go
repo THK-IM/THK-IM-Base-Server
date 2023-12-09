@@ -6,9 +6,9 @@ import (
 	"os"
 )
 
-var configConsulEndpoint = flag.String("config-consul-endpoint", "", "consul address")
-var configConsulKey = flag.String("config-consul-key", "", "consul key")
-var configPath = flag.String("config-path", "etc/server.yaml", "the config file")
+var configConsulEndpoint = flag.String("config-consul-endpoint", "", "config consul address")
+var configConsulKey = flag.String("config-consul-key", "", "config consul key")
+var configPath = flag.String("config-path", "", "config file path")
 
 func init() {
 	flag.Parse()
