@@ -219,6 +219,7 @@ func (app *Context) Init(config *conf.Config) {
 
 func (app *Context) StartServe() {
 	address := fmt.Sprintf("%s:%s", app.config.Host, app.config.Port)
+	fmt.Println("StartServe: ", address)
 	if e := app.httpEngine.Run(address); e != nil {
 		panic(e)
 	} else {
