@@ -12,6 +12,12 @@ const evalBatchGet = "local result ={} " +
 	"end " +
 	"return result"
 
+const evalDelKeyByValue = `if redis.call("GET", KEYS[1]) == ARGV[1] then ` +
+	`return redis.call("DEL", KEYS[1]) ` +
+	`else ` +
+	`return 0 ` +
+	`end`
+
 func BatchGet(redisClient *redis.Client, keys []string) ([]interface{}, error) {
 	resp, errScript := redisClient.Eval(context.Background(), evalBatchGet, keys).Result()
 	if errScript != nil {
@@ -43,5 +49,17 @@ func BatchGetString(redisClient *redis.Client, keys []string) ([]*string, error)
 		return stringResp, nil
 	} else {
 		return nil, os.ErrInvalid
+	}
+}
+
+func DelKeyByValue(redisClient *redis.Client, key string, value interface{}) (bool, error) {
+	resp, err := redisClient.Eval(context.Background(), evalDelKeyByValue, []string{key}, []interface{}{value}).Result()
+	if err != nil {
+		return false, err
+	}
+	if resp == 0 {
+		return false, nil
+	} else {
+		return true, nil
 	}
 }
