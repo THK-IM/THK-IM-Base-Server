@@ -8,13 +8,13 @@ import (
 )
 
 const (
-	tokenKey = "Token"
-	uidKey   = "Uid"
+	TokenKey = "Token"
+	UidKey   = "Uid"
 )
 
 func UserTokenAuth(appCtx *server.Context) gin.HandlerFunc {
 	return func(context *gin.Context) {
-		token := context.Request.Header.Get(tokenKey)
+		token := context.Request.Header.Get(TokenKey)
 		if token == "" {
 			appCtx.Logger().Warn("token nil error")
 			dto.ResponseUnauthorized(context)
@@ -28,7 +28,7 @@ func UserTokenAuth(appCtx *server.Context) gin.HandlerFunc {
 			dto.ResponseUnauthorized(context)
 			context.Abort()
 		} else {
-			context.Set(uidKey, res.UserId)
+			context.Set(UidKey, res.UserId)
 			context.Next()
 		}
 	}
