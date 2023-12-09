@@ -188,8 +188,9 @@ func (app *Context) Init(config *conf.Config) {
 		}
 	}
 
-	app.rpcMap = make(map[string]interface{}, 0)
-	app.modelMap = make(map[string]interface{}, 0)
+	if config.Sdks != nil {
+		app.rpcMap = loader.LoadSdks(config.Sdks, logger)
+	}
 
 	if config.MsgQueue.Publishers != nil {
 		app.publisherMap = loader.LoadPublishers(config.MsgQueue.Publishers, nodeId, logger)
