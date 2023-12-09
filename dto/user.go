@@ -4,7 +4,7 @@ type PostUserOnlineReq struct {
 	NodeId    int64  `json:"node_id" binding:"required"`
 	ConnId    int64  `json:"conn_id" binding:"required"`
 	Online    bool   `json:"online"`
-	IsLogin   bool   `json:"is_login" binding:"required"` // 1 登录 2 心跳
+	IsLogin   bool   `json:"is_login"`
 	UId       int64  `json:"u_id" binding:"required"`
 	Platform  string `json:"platform" binding:"required"`
 	Timestamp int64  `json:"timestamp" binding:"required"`
