@@ -2,14 +2,11 @@ package event
 
 import (
 	"encoding/json"
-	"fmt"
 )
 
 const (
 	// ServerEventTypeKey 服务端事件类型Key
 	ServerEventTypeKey = "ServerEventType"
-	// ServerEventReceiversKey 服务端事件收件人Key
-	ServerEventReceiversKey = "ServerEventReceivers"
 	// ServerEventBodyKey 服务端事件Body Key
 	ServerEventBodyKey = "ServerEventBody"
 	// ServerEventUserOnline 服务端事件:用户上线
@@ -42,7 +39,6 @@ func BuildUserOnlineEvent(nodeId int64, online bool, uid, connId, onLineTime int
 	}
 	m := make(map[string]interface{}, 0)
 	m[ServerEventTypeKey] = ServerEventUserOnline
-	m[ServerEventReceiversKey] = fmt.Sprintf("%d", uid)
 	m[ServerEventBodyKey] = string(b)
 	return m, nil
 }
