@@ -85,6 +85,34 @@ func (app *Context) WebsocketServer() websocket.Server {
 	return app.websocketServer
 }
 
+func (app *Context) ObjectStorage() object.Storage {
+	return app.objectStorage
+}
+
+func (app *Context) ServerEventPublisher() mq.Publisher {
+	return app.publisherMap["server_event"]
+}
+
+func (app *Context) MsgPusherPublisher() mq.Publisher {
+	return app.publisherMap["push_msg"]
+}
+
+func (app *Context) MsgSaverPublisher() mq.Publisher {
+	return app.publisherMap["save_msg"]
+}
+
+func (app *Context) MsgPusherSubscriber() mq.Subscriber {
+	return app.subscriberMap["push_msg"]
+}
+
+func (app *Context) MsgSaverSubscriber() mq.Subscriber {
+	return app.subscriberMap["save_msg"]
+}
+
+func (app *Context) ServerEventSubscriber() mq.Subscriber {
+	return app.subscriberMap["server_event"]
+}
+
 func (app *Context) SessionModel() model.SessionModel {
 	return app.modelMap["session"].(model.SessionModel)
 }
