@@ -172,6 +172,7 @@ func (app *Context) Init(config *conf.Config) {
 		panic(err)
 	}
 	httpEngine := gin.New()
+	app.config = config
 	app.logger = logger
 	app.redisCache = redisCache
 	app.nodeId = nodeId
