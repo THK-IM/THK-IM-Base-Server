@@ -6,7 +6,10 @@ import (
 	"github.com/THK-IM/THK-IM-Base-Server/loader"
 	"github.com/THK-IM/THK-IM-Base-Server/locker"
 	"github.com/THK-IM/THK-IM-Base-Server/metric"
+	"github.com/THK-IM/THK-IM-Base-Server/model"
 	"github.com/THK-IM/THK-IM-Base-Server/mq"
+	"github.com/THK-IM/THK-IM-Base-Server/object"
+	"github.com/THK-IM/THK-IM-Base-Server/rpc"
 	"github.com/THK-IM/THK-IM-Base-Server/websocket"
 	"github.com/bwmarrin/snowflake"
 	"github.com/gin-gonic/gin"
@@ -26,6 +29,7 @@ type Context struct {
 	database        *gorm.DB
 	snowflakeNode   *snowflake.Node
 	httpEngine      *gin.Engine
+	objectStorage   object.Storage
 	websocketServer websocket.Server
 	rpcMap          map[string]interface{}
 	modelMap        map[string]interface{}
@@ -77,6 +81,60 @@ func (app *Context) NewLocker(key string, waitMs int, timeoutMs int) locker.Lock
 	return app.lockerFactory.NewLocker(key, waitMs, timeoutMs)
 }
 
+func (app *Context) WebsocketServer() websocket.Server {
+	return app.websocketServer
+}
+
+func (app *Context) SessionModel() model.SessionModel {
+	return app.modelMap["session"].(model.SessionModel)
+}
+
+func (app *Context) SessionMessageModel() model.SessionMessageModel {
+	return app.modelMap["session_message"].(model.SessionMessageModel)
+}
+
+func (app *Context) SessionUserModel() model.SessionUserModel {
+	return app.modelMap["session_user"].(model.SessionUserModel)
+}
+
+func (app *Context) UserMessageModel() model.UserMessageModel {
+	return app.modelMap["user_message"].(model.UserMessageModel)
+}
+
+func (app *Context) UserSessionModel() model.UserSessionModel {
+	return app.modelMap["user_session"].(model.UserSessionModel)
+}
+
+func (app *Context) ObjectModel() model.ObjectModel {
+	return app.modelMap["object"].(model.ObjectModel)
+}
+
+func (app *Context) SessionObjectModel() model.SessionObjectModel {
+	return app.modelMap["session_object"].(model.SessionObjectModel)
+}
+
+func (app *Context) UserOnlineStatusModel() model.UserOnlineStatusModel {
+	return app.modelMap["user_online_status"].(model.UserOnlineStatusModel)
+}
+
+func (app *Context) RpcMsgApi() rpc.MsgApi {
+	api, ok := app.rpcMap["msg-api"].(rpc.MsgApi)
+	if ok {
+		return api
+	} else {
+		return nil
+	}
+}
+
+func (app *Context) RpcUserApi() rpc.UserApi {
+	api, ok := app.rpcMap["user-api"].(rpc.UserApi)
+	if ok {
+		return api
+	} else {
+		return nil
+	}
+}
+
 func (app *Context) Init(config *conf.Config) {
 	logger := loader.LoadLogger(config.Name, config.Logger)
 	redisCache := loader.LoadRedis(config.RedisSource)
@@ -94,6 +152,9 @@ func (app *Context) Init(config *conf.Config) {
 
 	if config.MysqlSource != nil {
 		app.database = loader.LoadMysql(logger, config.MysqlSource)
+		if config.Models != nil {
+			app.modelMap = loader.LoadModels(config.Models, app.database, logger, snowflakeNode)
+		}
 	}
 
 	app.rpcMap = make(map[string]interface{}, 0)
@@ -114,6 +175,9 @@ func (app *Context) Init(config *conf.Config) {
 		app.lockerFactory = locker.NewRedisLockerFactory(redisCache, logger)
 	}
 
+	if config.ObjectStorage != nil {
+		app.objectStorage = object.NewMinioStorage(logger, config.ObjectStorage)
+	}
 	if config.WebSocket != nil {
 		app.websocketServer = websocket.NewServer(config.WebSocket, logger, httpEngine, snowflakeNode, config.Mode)
 	}
@@ -123,7 +187,7 @@ func (app *Context) Init(config *conf.Config) {
 	}
 }
 
-func (app *Context) Start() {
+func (app *Context) StartServe() {
 	address := fmt.Sprintf("%s:%s", app.config.Host, app.config.Port)
 	if e := app.httpEngine.Run(address); e != nil {
 		panic(e)
