@@ -1,6 +1,7 @@
 package conf
 
 import (
+	"fmt"
 	consul "github.com/hashicorp/consul/api"
 	"gopkg.in/yaml.v3"
 	"os"
@@ -144,6 +145,7 @@ type (
 )
 
 func Load(f string) (c Config, err error) {
+	fmt.Println("Load ", f)
 	data, e := os.ReadFile(f)
 	if e != nil {
 		return c, e
