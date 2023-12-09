@@ -2,9 +2,9 @@ package loader
 
 import (
 	"fmt"
-	"github.com/THK-IM/THK-IM-Base-Server/conf"
 	rotate "github.com/lestrrat-go/file-rotatelogs"
 	"github.com/sirupsen/logrus"
+	"github.com/thk-im/thk-im-base-server/conf"
 	"io"
 	"time"
 )

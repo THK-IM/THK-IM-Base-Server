@@ -2,19 +2,19 @@ package server
 
 import (
 	"fmt"
-	"github.com/THK-IM/THK-IM-Base-Server/conf"
-	"github.com/THK-IM/THK-IM-Base-Server/loader"
-	"github.com/THK-IM/THK-IM-Base-Server/locker"
-	"github.com/THK-IM/THK-IM-Base-Server/metric"
-	"github.com/THK-IM/THK-IM-Base-Server/model"
-	"github.com/THK-IM/THK-IM-Base-Server/mq"
-	"github.com/THK-IM/THK-IM-Base-Server/object"
-	"github.com/THK-IM/THK-IM-Base-Server/rpc"
-	"github.com/THK-IM/THK-IM-Base-Server/websocket"
 	"github.com/bwmarrin/snowflake"
 	"github.com/gin-gonic/gin"
 	"github.com/redis/go-redis/v9"
 	"github.com/sirupsen/logrus"
+	"github.com/thk-im/thk-im-base-server/conf"
+	"github.com/thk-im/thk-im-base-server/loader"
+	"github.com/thk-im/thk-im-base-server/locker"
+	"github.com/thk-im/thk-im-base-server/metric"
+	"github.com/thk-im/thk-im-base-server/model"
+	"github.com/thk-im/thk-im-base-server/mq"
+	"github.com/thk-im/thk-im-base-server/object"
+	"github.com/thk-im/thk-im-base-server/rpc"
+	"github.com/thk-im/thk-im-base-server/websocket"
 	"gorm.io/gorm"
 )
 

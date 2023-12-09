@@ -3,10 +3,10 @@ package object
 import (
 	"context"
 	"fmt"
-	"github.com/THK-IM/THK-IM-Base-Server/conf"
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
 	"github.com/sirupsen/logrus"
+	"github.com/thk-im/thk-im-base-server/conf"
 	"strings"
 	"time"
 )

@@ -3,9 +3,9 @@ package mq
 import (
 	"context"
 	"encoding/json"
-	"github.com/THK-IM/THK-IM-Base-Server/conf"
 	"github.com/segmentio/kafka-go"
 	"github.com/sirupsen/logrus"
+	"github.com/thk-im/thk-im-base-server/conf"
 	"strings"
 	"time"
 )

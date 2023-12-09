@@ -2,9 +2,9 @@ package main
 
 import (
 	"fmt"
-	"github.com/THK-IM/THK-IM-Base-Server/conf"
-	"github.com/THK-IM/THK-IM-Base-Server/server"
-	"github.com/THK-IM/THK-IM-Base-Server/utils"
+	"github.com/thk-im/thk-im-base-server/conf"
+	"github.com/thk-im/thk-im-base-server/server"
+	"github.com/thk-im/thk-im-base-server/utils"
 	"os"
 )
 

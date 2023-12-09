@@ -2,8 +2,8 @@ package model
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
-	"github.com/THK-IM/THK-IM-Server/pkg/errorx"
 	"github.com/bwmarrin/snowflake"
 	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
@@ -16,6 +16,8 @@ const (
 	SessionSuperAdmin = 3 // 超级管理员 可以全员禁言, 添加/删除管理员
 	SessionOwner      = 4 // 拥有者 可以添加超级管理员, 删除管理员，删除session
 )
+
+var ErrMemberCnt = errors.New("member count error")
 
 type (
 	SessionUser struct {
@@ -166,7 +168,7 @@ func (d defaultSessionUserModel) AddUser(session *Session, entityIds []int64, us
 	}
 
 	if count > maxCount-len(userIds) {
-		return nil, errorx.ErrGroupMemberCountBeyond
+		return nil, ErrMemberCnt
 	}
 
 	t := time.Now().UnixMilli()

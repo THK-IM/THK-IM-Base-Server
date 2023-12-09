@@ -3,10 +3,10 @@ package websocket
 import (
 	"errors"
 	"fmt"
-	"github.com/THK-IM/THK-IM-Base-Server/conf"
 	"github.com/bwmarrin/snowflake"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
+	"github.com/thk-im/thk-im-base-server/conf"
 	"golang.org/x/net/websocket"
 	"net/http"
 	"strconv"
