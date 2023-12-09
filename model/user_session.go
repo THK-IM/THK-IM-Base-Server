@@ -154,7 +154,7 @@ func (d defaultUserSessionModel) GetUserSession(userId, sessionId int64) (*UserS
 }
 
 func (d defaultUserSessionModel) GenUserSessionTableName(userId int64) string {
-	return "user_session_" + fmt.Sprintf("%02d", userId%(d.shards))
+	return fmt.Sprintf("user_session_%d", userId%(d.shards))
 }
 
 func NewUserSessionModel(db *gorm.DB, logger *logrus.Entry, snowflakeNode *snowflake.Node, shards int64) UserSessionModel {

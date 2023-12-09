@@ -265,11 +265,11 @@ func (d defaultSessionUserModel) UpdateUser(sessionId int64, userIds []int64, ro
 }
 
 func (d defaultSessionUserModel) genUserSessionTableName(userId int64) string {
-	return "user_session_" + fmt.Sprintf("%02d", userId%(d.shards))
+	return fmt.Sprintf("user_session_%d", userId%(d.shards))
 }
 
 func (d defaultSessionUserModel) genSessionUserTableName(sessionId int64) string {
-	return "session_user_" + fmt.Sprintf("%02d", sessionId%(d.shards))
+	return fmt.Sprintf("session_user_%d", sessionId%(d.shards))
 }
 
 func NewSessionUserModel(db *gorm.DB, logger *logrus.Entry, snowflakeNode *snowflake.Node, shards int64) SessionUserModel {

@@ -87,7 +87,7 @@ func (d defaultObjectModel) FindObjectByUId(id, uId int64, usTableName string) (
 }
 
 func (d defaultObjectModel) genObjectTableName(id int64) string {
-	return "object_" + fmt.Sprintf("%02d", id%(d.shards))
+	return fmt.Sprintf("object_%d", id%(d.shards))
 }
 
 func NewObjectModel(db *gorm.DB, logger *logrus.Entry, snowflakeNode *snowflake.Node, shards int64) ObjectModel {

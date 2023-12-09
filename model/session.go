@@ -89,7 +89,7 @@ func (d defaultSessionModel) CreateEmptySession(sessionType int, extData *string
 }
 
 func (d defaultSessionModel) genSessionTableName(sessionId int64) string {
-	return "session_" + fmt.Sprintf("%02d", sessionId%(d.shards))
+	return fmt.Sprintf("session_%d", sessionId%(d.shards))
 }
 
 func NewSessionModel(db *gorm.DB, logger *logrus.Entry, snowflakeNode *snowflake.Node, shards int64) SessionModel {

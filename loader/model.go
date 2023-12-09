@@ -45,7 +45,7 @@ func LoadTables(modeConfigs []conf.Model, database *gorm.DB) error {
 		}
 
 		for i := int64(0); i < ms.Shards; i++ {
-			sql := fmt.Sprintf(string(buffer), fmt.Sprintf("%02d", i))
+			sql := fmt.Sprintf(string(buffer), fmt.Sprintf("%d", i))
 			err = database.Exec(sql).Error
 			if err != nil {
 				return err

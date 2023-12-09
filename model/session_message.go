@@ -130,7 +130,7 @@ func (d defaultSessionMessageModel) GetSessionMessages(sessionId, ctime int64, o
 }
 
 func (d defaultSessionMessageModel) genSessionMessageTableName(sessionId int64) string {
-	return "session_message_" + fmt.Sprintf("%02d", sessionId%(d.shards))
+	return fmt.Sprintf("session_message_%d", sessionId%(d.shards))
 }
 
 func NewSessionMessageModel(db *gorm.DB, logger *logrus.Entry, snowflakeNode *snowflake.Node, shards int64) SessionMessageModel {

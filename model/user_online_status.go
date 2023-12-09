@@ -76,7 +76,7 @@ func (d defaultUserOnlineStatusModel) GetOnlineUserIds(userIds []int64, onlineTi
 }
 
 func (d defaultUserOnlineStatusModel) genUserOnlineStatusTable(userId int64) string {
-	return "user_online_status_" + fmt.Sprintf("%02d", userId%(d.shards))
+	return fmt.Sprintf("user_online_status_%d", userId%(d.shards))
 }
 
 func NewUserOnlineStatusModel(db *gorm.DB, logger *logrus.Entry, snowflakeNode *snowflake.Node, shards int64) UserOnlineStatusModel {

@@ -127,7 +127,7 @@ func (d defaultUserMessageModel) UpdateUserMessage(userId int64, sessionId int64
 }
 
 func (d defaultUserMessageModel) genUserMessageTableName(userId int64) string {
-	return "user_message_" + fmt.Sprintf("%02d", userId%(d.shards))
+	return fmt.Sprintf("user_message_%d", userId%(d.shards))
 }
 
 func NewUserMessageModel(db *gorm.DB, logger *logrus.Entry, snowflakeNode *snowflake.Node, shards int64) UserMessageModel {

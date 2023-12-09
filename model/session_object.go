@@ -70,7 +70,7 @@ func (d defaultSessionObjectModel) Insert(id, sId, fromUId, clientId int64) (int
 }
 
 func (d defaultSessionObjectModel) genSessionObjectTableName(sId int64) string {
-	return "session_object_" + fmt.Sprintf("%02d", sId%(d.shards))
+	return fmt.Sprintf("session_object_%d", sId%(d.shards))
 }
 
 func NewSessionObjectModel(db *gorm.DB, logger *logrus.Entry, snowflakeNode *snowflake.Node, shards int64) SessionObjectModel {
