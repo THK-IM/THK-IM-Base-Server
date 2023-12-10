@@ -41,12 +41,27 @@ func main() {
 		fmt.Println("ok: ", ok)
 	}
 
-	objectPath := "etc/test.png"
-	now := time.Now().UnixMilli()
-	urlPath, errUpload := srvContext.ObjectStorage().UploadObject(fmt.Sprintf("%d-test.png", now), objectPath)
-	if errUpload != nil {
-		fmt.Println(errUpload)
+	// objectPath := "etc/test.png"
+	// now := time.Now().UnixMilli()
+	// urlPath, errUpload := srvContext.ObjectStorage().UploadObject(fmt.Sprintf("%d-test.png", now), objectPath)
+	// if errUpload != nil {
+	// 	fmt.Println(errUpload)
+	// } else {
+	// 	fmt.Println(urlPath)
+	// }
+
+	token, errToken := utils.GenerateUserToken(1, srvContext.Config().Name, srvContext.Config().Cipher)
+	if errToken != nil {
+		fmt.Println(errToken)
 	} else {
-		fmt.Println(urlPath)
+		fmt.Println(token)
 	}
+
+	id, errId := utils.CheckUserToken(token, srvContext.Config().Cipher)
+	if errId != nil {
+		fmt.Println(errId)
+	} else {
+		fmt.Println(id)
+	}
+
 }
