@@ -28,8 +28,8 @@ func LoadModels(modeConfigs []conf.Model, database *gorm.DB, logger *logrus.Entr
 			m = model.NewObjectModel(database, logger, snowflakeNode, ms.Shards)
 		} else if ms.Name == "session_object" {
 			m = model.NewSessionObjectModel(database, logger, snowflakeNode, ms.Shards)
-		} else if ms.Name == "user_online_status" {
-			m = model.NewUserOnlineStatusModel(database, logger, snowflakeNode, ms.Shards)
+		} else if ms.Name == "user_online_record" {
+			m = model.NewUserOnlineRecordModel(database, logger, snowflakeNode, ms.Shards)
 		}
 		modelMap[ms.Name] = m
 	}

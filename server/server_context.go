@@ -145,8 +145,8 @@ func (app *Context) SessionObjectModel() model.SessionObjectModel {
 	return app.modelMap["session_object"].(model.SessionObjectModel)
 }
 
-func (app *Context) UserOnlineStatusModel() model.UserOnlineStatusModel {
-	return app.modelMap["user_online_status"].(model.UserOnlineStatusModel)
+func (app *Context) UserOnlineRecordModel() model.UserOnlineRecordModel {
+	return app.modelMap["user_online_record"].(model.UserOnlineRecordModel)
 }
 
 func (app *Context) RpcMsgApi() rpc.MsgApi {
