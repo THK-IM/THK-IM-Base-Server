@@ -43,7 +43,8 @@ func (m MinioStorage) UploadObject(key string, path string) (*string, error) {
 	if errPut != nil {
 		return nil, errPut
 	} else {
-		return &info.Key, nil
+		url := fmt.Sprintf("%s/%s/%s", m.conf.Endpoint, m.conf.Bucket, info.Key)
+		return &url, nil
 	}
 }
 
