@@ -1,4 +1,5 @@
 Name: server
+Cipher: thk_im
 Host: 0.0.0.0
 Port: 10000
 Mode: debug

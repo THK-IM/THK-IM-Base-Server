@@ -125,6 +125,7 @@ type (
 
 	Config struct {
 		Name          string         `yaml:"Name"`
+		Cipher        string         `yaml:"cipher"`
 		Host          string         `yaml:"Host"`
 		Port          string         `yaml:"Port"`
 		Mode          string         `yaml:"Mode"`
