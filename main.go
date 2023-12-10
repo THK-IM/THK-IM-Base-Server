@@ -6,18 +6,11 @@ import (
 	"github.com/thk-im/thk-im-base-server/conf"
 	"github.com/thk-im/thk-im-base-server/server"
 	"github.com/thk-im/thk-im-base-server/utils"
-	"os"
 	"time"
 )
 
 func main() {
-	dir, errWd := os.Getwd()
-	if errWd != nil {
-		panic(errWd)
-	}
-	fmt.Println(dir)
-
-	config, err := conf.Load(dir + "/etc/server.yaml")
+	config, err := conf.Load("etc/server.yaml")
 	if err != nil {
 		panic(err)
 	}
@@ -46,5 +39,14 @@ func main() {
 		fmt.Println(errDel)
 	} else {
 		fmt.Println("ok: ", ok)
+	}
+
+	objectPath := "etc/test.png"
+	now := time.Now().UnixMilli()
+	urlPath, errUpload := srvContext.ObjectStorage().UploadObject(fmt.Sprintf("%d-test.png", now), objectPath)
+	if errUpload != nil {
+		fmt.Println(errUpload)
+	} else {
+		fmt.Println(urlPath)
 	}
 }

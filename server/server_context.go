@@ -21,7 +21,7 @@ import (
 type Context struct {
 	startTime       int64
 	nodeId          int64
-	metricServer    *metric.Service
+	metricService   *metric.Service
 	config          *conf.Config
 	logger          *logrus.Entry
 	redisCache      *redis.Client
@@ -79,6 +79,10 @@ func (app *Context) AddModel(name string, model interface{}) {
 
 func (app *Context) NewLocker(key string, waitMs int, timeoutMs int) locker.Locker {
 	return app.lockerFactory.NewLocker(key, waitMs, timeoutMs)
+}
+
+func (app *Context) MetricService() *metric.Service {
+	return app.metricService
 }
 
 func (app *Context) WebsocketServer() websocket.Server {
@@ -215,7 +219,7 @@ func (app *Context) Init(config *conf.Config) {
 	}
 
 	if config.Metric != nil {
-		app.metricServer = metric.NewService(config.Name, nodeId, logger)
+		app.metricService = metric.NewService(config.Name, nodeId, logger)
 	}
 }
 

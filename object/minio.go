@@ -3,10 +3,12 @@ package object
 import (
 	"context"
 	"fmt"
+	"github.com/h2non/filetype"
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
 	"github.com/sirupsen/logrus"
 	"github.com/thk-im/thk-im-base-server/conf"
+	"os"
 	"strings"
 	"time"
 )
@@ -15,6 +17,34 @@ type MinioStorage struct {
 	logger *logrus.Entry
 	conf   *conf.ObjectStorage
 	client *minio.Client
+}
+
+func (m MinioStorage) UploadObject(key string, path string) (*string, error) {
+	buf, errBuf := os.ReadFile(path)
+	if errBuf != nil {
+		return nil, errBuf
+	}
+	kind, errKind := filetype.Match(buf)
+	if errKind != nil {
+		return nil, errKind
+	}
+	file, err := os.Open(path)
+	if err != nil {
+		return nil, err
+	}
+	fileInfo, errInfo := file.Stat()
+	if errInfo != nil {
+		return nil, errInfo
+	}
+	options := minio.PutObjectOptions{
+		ContentType: kind.MIME.Value,
+	}
+	info, errPut := m.client.PutObject(context.Background(), m.conf.Bucket, key, file, fileInfo.Size(), options)
+	if errPut != nil {
+		return nil, errPut
+	} else {
+		return &info.Key, nil
+	}
 }
 
 func (m MinioStorage) GetUploadParams(key string) (string, string, map[string]string, error) {
