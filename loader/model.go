@@ -11,7 +11,7 @@ import (
 )
 
 func LoadModels(modeConfigs []conf.Model, database *gorm.DB, logger *logrus.Entry, snowflakeNode *snowflake.Node) map[string]interface{} {
-	modelMap := make(map[string]interface{}, 0)
+	modelMap := make(map[string]interface{})
 	for _, ms := range modeConfigs {
 		var m interface{}
 		if ms.Name == "session" {

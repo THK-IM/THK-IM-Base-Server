@@ -15,6 +15,7 @@ import (
 	"github.com/thk-im/thk-im-base-server/object"
 	"github.com/thk-im/thk-im-base-server/rpc"
 	"github.com/thk-im/thk-im-base-server/websocket"
+	"golang.org/x/text/language"
 	"gorm.io/gorm"
 )
 
@@ -35,6 +36,14 @@ type Context struct {
 	modelMap        map[string]interface{}
 	publisherMap    map[string]mq.Publisher
 	subscriberMap   map[string]mq.Subscriber
+}
+
+func (app *Context) SupportLanguage() []language.Tag {
+	return []language.Tag{
+		language.Chinese,
+		language.SimplifiedChinese,
+		language.TraditionalChinese,
+	}
 }
 
 func (app *Context) StartTime() int64 {

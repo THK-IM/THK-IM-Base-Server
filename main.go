@@ -10,6 +10,7 @@ import (
 )
 
 func main() {
+
 	config, err := conf.Load("etc/server.yaml")
 	if err != nil {
 		panic(err)
@@ -63,5 +64,4 @@ func main() {
 	} else {
 		fmt.Println(id)
 	}
-
 }
