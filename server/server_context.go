@@ -2,7 +2,6 @@ package server
 
 import (
 	"fmt"
-	"github.com/bwmarrin/snowflake"
 	"github.com/gin-gonic/gin"
 	"github.com/redis/go-redis/v9"
 	"github.com/sirupsen/logrus"
@@ -14,6 +13,7 @@ import (
 	"github.com/thk-im/thk-im-base-server/mq"
 	"github.com/thk-im/thk-im-base-server/object"
 	"github.com/thk-im/thk-im-base-server/rpc"
+	"github.com/thk-im/thk-im-base-server/snowflake"
 	"github.com/thk-im/thk-im-base-server/websocket"
 	"golang.org/x/text/language"
 	"gorm.io/gorm"

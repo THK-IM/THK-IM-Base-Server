@@ -1,9 +1,10 @@
 package model
 
 import (
+	"errors"
 	"fmt"
-	"github.com/bwmarrin/snowflake"
 	"github.com/sirupsen/logrus"
+	"github.com/thk-im/thk-im-base-server/snowflake"
 	"gorm.io/gorm"
 )
 
@@ -48,7 +49,7 @@ func (d defaultUserOnlineRecordModel) UpdateUserOnlineRecord(userId, onlineTime,
 	sqlStr := "select * from " + d.genUserOnlineRecordTable(userId) + " where user_id = ? and platform = ?"
 	onlineStatus := &UserOnlineRecord{}
 	err = tx.Raw(sqlStr, userId, platform).Scan(onlineStatus).Error
-	if err != nil && err != gorm.ErrRecordNotFound {
+	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		return
 	}
 	if onlineStatus.UserId <= 0 {

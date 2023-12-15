@@ -1,11 +1,10 @@
 package main
 
 import (
-	"context"
 	"fmt"
 	"github.com/thk-im/thk-im-base-server/conf"
 	"github.com/thk-im/thk-im-base-server/server"
-	"github.com/thk-im/thk-im-base-server/utils"
+	"math/rand"
 	"time"
 )
 
@@ -19,28 +18,44 @@ func main() {
 	srvContext := &server.Context{}
 	srvContext.Init(&config)
 
-	keys := make([]string, 0)
+	idMap := make(map[int64][]int64)
 	for i := 0; i < 10000; i++ {
-		keys = append(keys, utils.GetRandomString(12))
-	}
-	resp, errGet := utils.BatchGetString(srvContext.RedisCache(), keys)
-	if errGet != nil {
-		fmt.Println(errGet)
-	} else {
-		fmt.Println("len:", len(resp))
-	}
-
-	errSet := srvContext.RedisCache().Set(context.Background(), "22", 11, time.Hour).Err()
-	if errSet != nil {
-		fmt.Println(errSet)
+		ms := rand.Intn(5)
+		time.Sleep(time.Millisecond * time.Duration(ms))
+		id := srvContext.SnowflakeNode().Generate().Int64()
+		if idMap[id%10] == nil {
+			idMap[id%10] = []int64{id}
+		} else {
+			idMap[id%10] = append(idMap[id%10], id)
+		}
 	}
 
-	ok, errDel := utils.DelKeyByValue(srvContext.RedisCache(), "22", 11)
-	if errDel != nil {
-		fmt.Println(errDel)
-	} else {
-		fmt.Println("ok: ", ok)
+	for k, v := range idMap {
+		fmt.Println(k, len(v))
 	}
+
+	// keys := make([]string, 0)
+	// for i := 0; i < 10000; i++ {
+	// 	keys = append(keys, utils.GetRandomString(12))
+	// }
+	// resp, errGet := utils.BatchGetString(srvContext.RedisCache(), keys)
+	// if errGet != nil {
+	// 	fmt.Println(errGet)
+	// } else {
+	// 	fmt.Println("len:", len(resp))
+	// }
+	//
+	// errSet := srvContext.RedisCache().Set(context.Background(), "22", 11, time.Hour).Err()
+	// if errSet != nil {
+	// 	fmt.Println(errSet)
+	// }
+	//
+	// ok, errDel := utils.DelKeyByValue(srvContext.RedisCache(), "22", 11)
+	// if errDel != nil {
+	// 	fmt.Println(errDel)
+	// } else {
+	// 	fmt.Println("ok: ", ok)
+	// }
 
 	// objectPath := "etc/test.png"
 	// now := time.Now().UnixMilli()
@@ -51,17 +66,17 @@ func main() {
 	// 	fmt.Println(urlPath)
 	// }
 
-	token, errToken := utils.GenerateUserToken(1, srvContext.Config().Name, srvContext.Config().Cipher)
-	if errToken != nil {
-		fmt.Println(errToken)
-	} else {
-		fmt.Println(token)
-	}
-
-	id, errId := utils.CheckUserToken(token, srvContext.Config().Cipher)
-	if errId != nil {
-		fmt.Println(errId)
-	} else {
-		fmt.Println(id)
-	}
+	// token, errToken := utils.GenerateUserToken(1, srvContext.Config().Name, srvContext.Config().Cipher)
+	// if errToken != nil {
+	// 	fmt.Println(errToken)
+	// } else {
+	// 	fmt.Println(token)
+	// }
+	//
+	// id, errId := utils.CheckUserToken(token, srvContext.Config().Cipher)
+	// if errId != nil {
+	// 	fmt.Println(errId)
+	// } else {
+	// 	fmt.Println(id)
+	// }
 }

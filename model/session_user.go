@@ -4,8 +4,8 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"github.com/bwmarrin/snowflake"
 	"github.com/sirupsen/logrus"
+	"github.com/thk-im/thk-im-base-server/snowflake"
 	"gorm.io/gorm"
 	"time"
 )
