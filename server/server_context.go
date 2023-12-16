@@ -9,10 +9,8 @@ import (
 	"github.com/thk-im/thk-im-base-server/loader"
 	"github.com/thk-im/thk-im-base-server/locker"
 	"github.com/thk-im/thk-im-base-server/metric"
-	"github.com/thk-im/thk-im-base-server/model"
 	"github.com/thk-im/thk-im-base-server/mq"
 	"github.com/thk-im/thk-im-base-server/object"
-	"github.com/thk-im/thk-im-base-server/rpc"
 	"github.com/thk-im/thk-im-base-server/snowflake"
 	"github.com/thk-im/thk-im-base-server/websocket"
 	"golang.org/x/text/language"
@@ -126,56 +124,6 @@ func (app *Context) ServerEventSubscriber() mq.Subscriber {
 	return app.subscriberMap["server_event"]
 }
 
-func (app *Context) SessionModel() model.SessionModel {
-	return app.modelMap["session"].(model.SessionModel)
-}
-
-func (app *Context) SessionMessageModel() model.SessionMessageModel {
-	return app.modelMap["session_message"].(model.SessionMessageModel)
-}
-
-func (app *Context) SessionUserModel() model.SessionUserModel {
-	return app.modelMap["session_user"].(model.SessionUserModel)
-}
-
-func (app *Context) UserMessageModel() model.UserMessageModel {
-	return app.modelMap["user_message"].(model.UserMessageModel)
-}
-
-func (app *Context) UserSessionModel() model.UserSessionModel {
-	return app.modelMap["user_session"].(model.UserSessionModel)
-}
-
-func (app *Context) ObjectModel() model.ObjectModel {
-	return app.modelMap["object"].(model.ObjectModel)
-}
-
-func (app *Context) SessionObjectModel() model.SessionObjectModel {
-	return app.modelMap["session_object"].(model.SessionObjectModel)
-}
-
-func (app *Context) UserOnlineRecordModel() model.UserOnlineRecordModel {
-	return app.modelMap["user_online_record"].(model.UserOnlineRecordModel)
-}
-
-func (app *Context) RpcMsgApi() rpc.MsgApi {
-	api, ok := app.rpcMap["msg-api"].(rpc.MsgApi)
-	if ok {
-		return api
-	} else {
-		return nil
-	}
-}
-
-func (app *Context) RpcUserApi() rpc.UserApi {
-	api, ok := app.rpcMap["user-api"].(rpc.UserApi)
-	if ok {
-		return api
-	} else {
-		return nil
-	}
-}
-
 func (app *Context) Init(config *conf.Config) {
 	logger := loader.LoadLogger(config.Name, config.Logger)
 	redisCache := loader.LoadRedis(config.RedisSource)
@@ -196,13 +144,6 @@ func (app *Context) Init(config *conf.Config) {
 
 	if config.MysqlSource != nil {
 		app.database = loader.LoadMysql(logger, config.MysqlSource)
-		if config.Models != nil {
-			app.modelMap = loader.LoadModels(config.Models, app.database, logger, snowflakeNode)
-		}
-	}
-
-	if config.Sdks != nil {
-		app.rpcMap = loader.LoadSdks(config.Sdks, logger)
 	}
 
 	if config.MsgQueue.Publishers != nil {
