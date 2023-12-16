@@ -53,7 +53,7 @@ func ResponseInternalServerError(ctx *gin.Context, err error) {
 			ctx.JSON(http.StatusInternalServerError, rsp)
 		}
 	} else {
-		e = errorx.ErrServerUnknown
+		e = errorx.ErrInternalServerError
 		rsp := &ErrorResponse{
 			Code:    e.Code,
 			Message: e.Msg,
