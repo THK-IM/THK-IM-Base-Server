@@ -30,10 +30,10 @@ type Context struct {
 	httpEngine      *gin.Engine
 	objectStorage   object.Storage
 	websocketServer websocket.Server
-	rpcMap          map[string]interface{}
-	modelMap        map[string]interface{}
 	publisherMap    map[string]mq.Publisher
 	subscriberMap   map[string]mq.Subscriber
+	SdkMap          map[string]interface{}
+	ModelMap        map[string]interface{}
 }
 
 func (app *Context) SupportLanguage() []language.Tag {
