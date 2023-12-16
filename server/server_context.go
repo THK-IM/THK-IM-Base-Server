@@ -76,14 +76,6 @@ func (app *Context) Logger() *logrus.Entry {
 	return app.logger
 }
 
-func (app *Context) AddRpc(name string, rpc interface{}) {
-	app.rpcMap[name] = rpc
-}
-
-func (app *Context) AddModel(name string, model interface{}) {
-	app.modelMap[name] = model
-}
-
 func (app *Context) NewLocker(key string, waitMs int, timeoutMs int) locker.Locker {
 	return app.lockerFactory.NewLocker(key, waitMs, timeoutMs)
 }
