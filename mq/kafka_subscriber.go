@@ -94,16 +94,16 @@ func (k *kafkaSubscribe) subscribe(received OnMessageReceived) {
 	for {
 		m, err := k.reader.ReadMessage(context.Background())
 		if err != nil {
-			k.logger.Error(err)
+			k.logger.Errorf("subscribe %v", err)
 			break
 		}
 		msg := make(map[string]interface{})
 		if err = json.Unmarshal(m.Value, &msg); err == nil {
 			if err = received(msg); err != nil {
-				k.logger.Error(err)
+				k.logger.Errorf("subscribe %v", err)
 			}
 		} else {
-			k.logger.Error(err)
+			k.logger.Errorf("subscribe %v", err)
 		}
 	}
 
@@ -122,14 +122,14 @@ func (k *kafkaSubscribe) subscribeGroup(received OnMessageReceived) {
 		msg := make(map[string]interface{})
 		if err = json.Unmarshal(m.Value, &msg); err == nil {
 			if err = received(msg); err != nil {
-				k.logger.Errorf("Failed to unmarshal messages %s", err.Error())
+				k.logger.Errorf("subscribeGroup %v, %v", msg, err)
 			} else {
 				if err = k.reader.CommitMessages(ctx, m); err != nil {
-					k.logger.Error("Failed to commit messages: %s", err.Error())
+					k.logger.Errorf("subscribeGroup %v, %v", m, err)
 				}
 			}
 		} else {
-			k.logger.Error(err)
+			k.logger.Errorf("subscribeGroup %v, %v", m.Value, err)
 		}
 	}
 }

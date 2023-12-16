@@ -140,7 +140,7 @@ func (d redisSubscriber) consumeMessages(messages []redis.XMessage, onMessageRec
 				d.client.XAck(ctx, d.stream, *d.group, msg.ID)
 			}
 		} else {
-			d.logger.Error(fmt.Sprintf("err: %v, group: %v, client id: %s, msgId: %s, values: %v",
+			d.logger.Error(fmt.Sprintf("consumeMessages err: %v, group: %v, client id: %s, msgId: %s, values: %v",
 				err, d.group, d.clientId, msg.ID, msg.Values))
 		}
 	}
