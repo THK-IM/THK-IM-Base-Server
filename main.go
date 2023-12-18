@@ -2,10 +2,9 @@ package main
 
 import (
 	"fmt"
+	"github.com/google/uuid"
 	"github.com/thk-im/thk-im-base-server/conf"
 	"github.com/thk-im/thk-im-base-server/server"
-	"math/rand"
-	"time"
 )
 
 func main() {
@@ -18,20 +17,8 @@ func main() {
 	srvContext := &server.Context{}
 	srvContext.Init(&config)
 
-	idMap := make(map[int64][]int64)
-	for i := 0; i < 10000; i++ {
-		ms := rand.Intn(5)
-		time.Sleep(time.Millisecond * time.Duration(ms))
-		id := srvContext.SnowflakeNode().Generate().Int64()
-		if idMap[id%10] == nil {
-			idMap[id%10] = []int64{id}
-		} else {
-			idMap[id%10] = append(idMap[id%10], id)
-		}
-	}
-
-	for k, v := range idMap {
-		fmt.Println(k, len(v))
+	for i := 0; i < 1000; i++ {
+		fmt.Println(uuid.New().String())
 	}
 
 	// keys := make([]string, 0)

@@ -9,6 +9,7 @@ import (
 	"github.com/thk-im/thk-im-base-server/loader"
 	"github.com/thk-im/thk-im-base-server/locker"
 	"github.com/thk-im/thk-im-base-server/metric"
+	"github.com/thk-im/thk-im-base-server/middleware"
 	"github.com/thk-im/thk-im-base-server/mq"
 	"github.com/thk-im/thk-im-base-server/object"
 	"github.com/thk-im/thk-im-base-server/snowflake"
@@ -126,6 +127,8 @@ func (app *Context) Init(config *conf.Config) {
 	}
 	gin.SetMode(config.Mode)
 	httpEngine := gin.Default()
+	claimsMiddleware := middleware.Claims(app)
+	httpEngine.Use(claimsMiddleware)
 	app.httpEngine = httpEngine
 	app.config = config
 	app.logger = logger

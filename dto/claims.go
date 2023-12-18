@@ -2,26 +2,31 @@ package dto
 
 import "golang.org/x/crypto/openpgp/errors"
 
-type MapClaims map[string]interface{}
+type ThkClaims map[string]interface{}
 
 const (
-	TraceId  = "traceId"
-	Language = "language"
+	TraceId  = "Trace-Id"
+	Language = "Accept-Language"
+	JwtToken = "Authorization"
 )
 
-func (m MapClaims) PutValue(key string, value interface{}) {
+func (m ThkClaims) PutValue(key string, value interface{}) {
 	m[key] = value
 }
 
-func (m MapClaims) GetTraceId() (*string, error) {
+func (m ThkClaims) GetTraceId() (*string, error) {
 	return m.parseString(TraceId)
 }
 
-func (m MapClaims) GetLanguage() (*string, error) {
+func (m ThkClaims) GetLanguage() (*string, error) {
 	return m.parseString(Language)
 }
 
-func (m MapClaims) parseString(key string) (*string, error) {
+func (m ThkClaims) GetToken() (*string, error) {
+	return m.parseString(JwtToken)
+}
+
+func (m ThkClaims) parseString(key string) (*string, error) {
 	var cs *string = nil
 	switch v := m[key].(type) {
 	case *string:
@@ -32,7 +37,7 @@ func (m MapClaims) parseString(key string) (*string, error) {
 	return cs, nil
 }
 
-func (m MapClaims) parseInt(key string) (*int, error) {
+func (m ThkClaims) parseInt(key string) (*int, error) {
 	var cs *int = nil
 	switch v := m[key].(type) {
 	case *int:
@@ -43,7 +48,7 @@ func (m MapClaims) parseInt(key string) (*int, error) {
 	return cs, nil
 }
 
-func (m MapClaims) parseInt64(key string) (*int64, error) {
+func (m ThkClaims) parseInt64(key string) (*int64, error) {
 	var cs *int64 = nil
 	switch v := m[key].(type) {
 	case *int64:
@@ -54,7 +59,7 @@ func (m MapClaims) parseInt64(key string) (*int64, error) {
 	return cs, nil
 }
 
-func (m MapClaims) parseStringArray(key string) ([]string, error) {
+func (m ThkClaims) parseStringArray(key string) ([]string, error) {
 	var cs []string = nil
 	switch v := m[key].(type) {
 	case []string:
@@ -65,7 +70,7 @@ func (m MapClaims) parseStringArray(key string) ([]string, error) {
 	return cs, nil
 }
 
-func (m MapClaims) parseInt64Array(key string) ([]int64, error) {
+func (m ThkClaims) parseInt64Array(key string) ([]int64, error) {
 	var cs []int64 = nil
 	switch v := m[key].(type) {
 	case []int64:
@@ -76,7 +81,7 @@ func (m MapClaims) parseInt64Array(key string) ([]int64, error) {
 	return cs, nil
 }
 
-func (m MapClaims) parseIntArray(key string) ([]int, error) {
+func (m ThkClaims) parseIntArray(key string) ([]int, error) {
 	var cs []int = nil
 	switch v := m[key].(type) {
 	case []int:
