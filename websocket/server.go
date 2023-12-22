@@ -167,7 +167,7 @@ func (server *WsServer) SendMessageToUsers(uIds []int64, msg string) (err error)
 	for _, c := range allClients {
 		e := c.WriteMessage(msg)
 		if e != nil {
-			server.logger.Errorf("client: %v, err, %s", c.Info(), err.Error())
+			server.logger.WithFields(logrus.Fields(c.Claims())).Errorf("client: %v, err, %s", c.Info(), err.Error())
 		}
 	}
 	return nil
@@ -204,21 +204,29 @@ func (server *WsServer) SetOnClientMsgReceived(r OnClientMsgReceived) {
 }
 
 func (server *WsServer) onNewConn(ws *websocket.Conn) {
+	claims := dto.ThkClaims{}
+	claims.PutValue(dto.TraceID, ws.Request().Header.Get(dto.TraceID))
+	claims.PutValue(dto.Language, ws.Request().Header.Get(dto.Language))
+	claims.PutValue(dto.ClientVersion, ws.Request().Header.Get(dto.ClientPlatform))
+	claims.PutValue(dto.ClientOriginIP, ws.Request().Header.Get(dto.ClientPlatform))
+	claims.PutValue(dto.ClientPlatform, ws.Request().Header.Get(dto.ClientPlatform))
+
 	if server.curCount.Load() >= server.conf.MaxClient {
 		_ = ws.Close()
-		server.logger.Infof("client count reach max count %d", server.conf.MaxClient)
+		server.logger.WithFields(logrus.Fields(claims)).Infof("client count reach max count %d", server.conf.MaxClient)
 		return
 	}
+
 	uid := ws.Request().Header.Get(UidKey)
 	uId, err := strconv.Atoi(uid)
 	if err != nil {
 		_ = ws.Close()
-		server.logger.Infof("uid: %s is invaild", uid)
+		server.logger.WithFields(logrus.Fields(claims)).Infof("uid: %s is invaild", uid)
 		return
 	}
-	platform := ws.Request().Header.Get(dto.ClientPlatform)
+
 	id := server.snowflakeNode.Generate()
-	client := NewClient(ws, int64(id), int64(uId), platform, server)
+	client := NewClient(ws, int64(id), int64(uId), claims, server)
 	err = server.AddClient(int64(uId), client)
 	if err != nil {
 		server.logger.Error(err)
@@ -231,6 +239,10 @@ func (server *WsServer) getToken(ctx *gin.Context) error {
 	claims := ctx.MustGet(middleware.ClaimsKey).(dto.ThkClaims)
 	uid, err := server.UidGetter(claims)
 	if err == nil {
+		ctx.Request.Header.Set(dto.TraceID, claims.GetTraceId())
+		ctx.Request.Header.Set(dto.Language, claims.GetLanguage())
+		ctx.Request.Header.Set(dto.ClientVersion, claims.GetClientVersion())
+		ctx.Request.Header.Set(dto.ClientOriginIP, claims.GetClientOriginIP())
 		ctx.Request.Header.Set(dto.ClientPlatform, claims.GetClientPlatform())
 		ctx.Request.Header.Set(UidKey, fmt.Sprintf("%d", uid))
 	}
