@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-func WhiteIpAuth(ipWhiteList string, logger logrus.Entry) gin.HandlerFunc {
+func WhiteIpAuth(ipWhiteList string, logger *logrus.Entry) gin.HandlerFunc {
 	ips := strings.Split(ipWhiteList, ",")
 	return func(context *gin.Context) {
 		ip := context.ClientIP()
