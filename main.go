@@ -1,8 +1,10 @@
 package main
 
 import (
+	"fmt"
 	"github.com/thk-im/thk-im-base-server/conf"
 	"github.com/thk-im/thk-im-base-server/server"
+	"github.com/thk-im/thk-im-base-server/utils"
 )
 
 func main() {
@@ -47,17 +49,17 @@ func main() {
 	// 	fmt.Println(urlPath)
 	// }
 
-	// token, errToken := utils.GenerateUserToken(1, srvContext.Config().Name, srvContext.Config().Cipher)
-	// if errToken != nil {
-	// 	fmt.Println(errToken)
-	// } else {
-	// 	fmt.Println(token)
-	// }
-	//
-	// id, errId := utils.CheckUserToken(token, srvContext.Config().Cipher)
-	// if errId != nil {
-	// 	fmt.Println(errId)
-	// } else {
-	// 	fmt.Println(id)
-	// }
+	token, errToken := utils.GenerateUserToken(1738134077011138097, srvContext.Config().Name, srvContext.Config().Cipher)
+	if errToken != nil {
+		fmt.Println(errToken)
+	} else {
+		fmt.Println(token)
+	}
+
+	id, errId := utils.CheckUserToken(token, srvContext.Config().Cipher)
+	if errId != nil {
+		fmt.Println(errId)
+	} else {
+		fmt.Println(id)
+	}
 }

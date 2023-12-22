@@ -6,6 +6,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/thk-im/thk-im-base-server/dto"
 	"strconv"
+	"strings"
 )
 
 const ClaimsKey = "THK-Claims"
@@ -51,6 +52,8 @@ func Claims() gin.HandlerFunc {
 		claims.PutValue(dto.Language, lang)
 
 		token := context.Request.Header.Get(dto.JwtToken)
+		token = strings.ReplaceAll(token, "Bearer ", "")
+		token = strings.ReplaceAll(token, " ", "")
 		claims.PutValue(dto.JwtToken, token)
 
 		context.Set(ClaimsKey, claims)

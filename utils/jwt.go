@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/golang-jwt/jwt/v5"
+	"strconv"
 	"time"
 )
 
@@ -17,8 +18,9 @@ type UserTokenClaims struct {
 func GenerateUserToken(id int64, serverName, password string) (string, error) {
 	nowTime := time.Now()
 	expireTime := nowTime.Add(3 * 24 * time.Hour)
+	strId := strconv.FormatInt(id, 36)
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"id":        id,
+		"id":        strId,
 		"expiresAt": expireTime.Unix(),
 		"issuer":    serverName,
 	})
@@ -38,10 +40,10 @@ func CheckUserToken(token, password string) (*int64, error) {
 	}
 
 	if claims, ok := jwtToken.Claims.(jwt.MapClaims); ok {
-		id, okId := claims["id"].(float64)
+		strId, okId := claims["id"].(string)
 		if okId {
-			idInt64 := int64(id)
-			return &idInt64, nil
+			idInt64, errParse := strconv.ParseInt(strId, 36, 64)
+			return &idInt64, errParse
 		}
 	}
 
