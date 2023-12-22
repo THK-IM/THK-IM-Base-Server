@@ -50,6 +50,9 @@ func Claims() gin.HandlerFunc {
 		lang := context.Request.Header.Get(dto.Language)
 		claims.PutValue(dto.Language, lang)
 
+		token := context.Request.Header.Get(dto.JwtToken)
+		claims.PutValue(dto.JwtToken, token)
+
 		context.Set(ClaimsKey, claims)
 	}
 }
