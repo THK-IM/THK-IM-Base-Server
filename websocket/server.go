@@ -1,30 +1,28 @@
 package websocket
 
 import (
-	"errors"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 	"github.com/thk-im/thk-im-base-server/conf"
+	"github.com/thk-im/thk-im-base-server/dto"
+	"github.com/thk-im/thk-im-base-server/middleware"
 	"github.com/thk-im/thk-im-base-server/snowflake"
 	"golang.org/x/net/websocket"
 	"net/http"
 	"strconv"
-	"strings"
 	"sync"
 	"sync/atomic"
 )
 
 const (
-	UidKey      = "uid"
-	TokenKey    = "token"
-	PlatformKey = "platform"
+	UidKey = "uid"
 )
 
 type OnClientConnected func(client Client)
 type OnClientClosed func(client Client)
 type OnClientMsgReceived func(msg string, client Client)
-type UidGetter func(token string, platform string) (uid int64, err error)
+type UidGetter func(claim dto.ThkClaims) (uid int64, err error)
 
 type Server interface {
 	Init() error
@@ -218,7 +216,7 @@ func (server *WsServer) onNewConn(ws *websocket.Conn) {
 		server.logger.Infof("uid: %s is invaild", uid)
 		return
 	}
-	platform := ws.Request().Header.Get(PlatformKey)
+	platform := ws.Request().Header.Get(dto.ClientPlatform)
 	id := server.snowflakeNode.Generate()
 	client := NewClient(ws, int64(id), int64(uId), platform, server)
 	err = server.AddClient(int64(uId), client)
@@ -230,31 +228,12 @@ func (server *WsServer) onNewConn(ws *websocket.Conn) {
 }
 
 func (server *WsServer) getToken(ctx *gin.Context) error {
-	pf := ctx.Query(PlatformKey)
-	if strings.EqualFold(pf, "") {
-		pf = ctx.GetHeader(PlatformKey)
-		if strings.EqualFold(pf, "") {
-			pf, _ = ctx.Cookie(PlatformKey)
-		}
+	claims := ctx.MustGet(middleware.ClaimsKey).(dto.ThkClaims)
+	uid, err := server.UidGetter(claims)
+	if err == nil {
+		ctx.Request.Header.Set(dto.ClientPlatform, claims.GetClientPlatform())
+		ctx.Request.Header.Set(UidKey, fmt.Sprintf("%d", uid))
 	}
-
-	token := ctx.Query(TokenKey)
-	if strings.EqualFold(token, "") {
-		token = ctx.GetHeader(TokenKey)
-		if strings.EqualFold(token, "") {
-			token, _ = ctx.Cookie(TokenKey)
-		}
-	}
-	if strings.EqualFold("", token) {
-		return errors.New("token nil")
-	} else {
-		uid, err := server.UidGetter(token, pf)
-		if err == nil {
-			server.logger.Infof("GetUidByToken, token: %s, uid: %d", token, uid)
-			ctx.Request.Header.Set(PlatformKey, pf)
-			ctx.Request.Header.Set(UidKey, fmt.Sprintf("%d", uid))
-		}
-		return err
-	}
+	return err
 
 }
