@@ -2,22 +2,23 @@ package middleware
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/sirupsen/logrus"
 	"github.com/thk-im/thk-im-base-server/dto"
-	"github.com/thk-im/thk-im-base-server/server"
 	"net"
 	"strings"
 )
 
-func WhiteIpAuth(appCtx *server.Context) gin.HandlerFunc {
-	ipWhiteList := appCtx.Config().IpWhiteList
+func WhiteIpAuth(ipWhiteList string, logger logrus.Entry) gin.HandlerFunc {
 	ips := strings.Split(ipWhiteList, ",")
 	return func(context *gin.Context) {
 		ip := context.ClientIP()
-		appCtx.Logger().Infof("RemoteAddr: %s", ip)
+		claims := context.MustGet(ClaimsKey).(dto.ThkClaims)
 		if isIpValid(ip, ips) {
+			logger.WithFields(logrus.Fields(claims)).Errorf("RemoteAddr forbidden: %s %v", ip, ips)
 			dto.ResponseForbidden(context)
 			context.Abort()
 		} else {
+			logger.WithFields(logrus.Fields(claims)).Infof("RemoteAddr: %s", ip)
 			context.Next()
 		}
 	}

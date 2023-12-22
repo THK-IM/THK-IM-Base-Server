@@ -127,7 +127,7 @@ func (app *Context) Init(config *conf.Config) {
 	}
 	gin.SetMode(config.Mode)
 	httpEngine := gin.Default()
-	claimsMiddleware := middleware.Claims(app)
+	claimsMiddleware := middleware.Claims()
 	httpEngine.Use(claimsMiddleware)
 	app.httpEngine = httpEngine
 	app.config = config

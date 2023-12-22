@@ -1,8 +1,8 @@
 package dto
 
-import "golang.org/x/crypto/openpgp/errors"
+import "github.com/sirupsen/logrus"
 
-type ThkClaims map[string]interface{}
+type ThkClaims logrus.Fields
 
 const (
 	TraceID        = "TraceID"
@@ -12,52 +12,50 @@ const (
 	JwtToken       = "Authorization"
 	ClientPlatform = "Client-Platform" // web/ios/android/centos/windows/apple
 	ClientVersion  = "Client-Version"
-	ClientIP       = "Client-IP"
+	ClientOriginIP = "Client-Origin-IP"
 )
 
-func (m ThkClaims) PutValue(key string, value interface{}) {
+func (m ThkClaims) PutValue(key string, value string) {
 	m[key] = value
 }
 
-func (m ThkClaims) GetTraceId() (*string, error) {
-	return m.parseString(TraceID)
+func (m ThkClaims) GetTraceId() string {
+	return m.getValue(TraceID)
 }
 
-func (m ThkClaims) GetParentSpanID() (*string, error) {
-	return m.parseString(ParentSpanID)
+func (m ThkClaims) GetParentSpanID() string {
+	return m.getValue(ParentSpanID)
 }
 
-func (m ThkClaims) GetSpanID() (*string, error) {
-	return m.parseString(SpanID)
+func (m ThkClaims) GetSpanID() string {
+	return m.getValue(SpanID)
 }
 
-func (m ThkClaims) GetLanguage() (*string, error) {
-	return m.parseString(Language)
+func (m ThkClaims) GetLanguage() string {
+	return m.getValue(Language)
 }
 
-func (m ThkClaims) GetClientPlatform() (*string, error) {
-	return m.parseString(ClientPlatform)
+func (m ThkClaims) GetClientPlatform() string {
+	return m.getValue(ClientPlatform)
 }
 
-func (m ThkClaims) GetClientVersion() (*string, error) {
-	return m.parseString(ClientVersion)
+func (m ThkClaims) GetClientVersion() string {
+	return m.getValue(ClientVersion)
 }
 
-func (m ThkClaims) GetClientIp() (*string, error) {
-	return m.parseString(ClientIP)
+func (m ThkClaims) GetClientOriginIP() string {
+	return m.getValue(ClientOriginIP)
 }
 
-func (m ThkClaims) GetToken() (*string, error) {
-	return m.parseString(JwtToken)
+func (m ThkClaims) GetToken() string {
+	return m.getValue(JwtToken)
 }
 
-func (m ThkClaims) parseString(key string) (*string, error) {
-	var cs *string = nil
-	switch v := m[key].(type) {
-	case *string:
-		cs = v
-	default:
-		return nil, errors.ErrKeyIncorrect
+func (m ThkClaims) getValue(key string) string {
+	value, ok := m[key].(string)
+	if ok {
+		return value
+	} else {
+		return ""
 	}
-	return cs, nil
 }

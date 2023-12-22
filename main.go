@@ -1,8 +1,6 @@
 package main
 
 import (
-	"fmt"
-	"github.com/google/uuid"
 	"github.com/thk-im/thk-im-base-server/conf"
 	"github.com/thk-im/thk-im-base-server/server"
 )
@@ -16,10 +14,6 @@ func main() {
 
 	srvContext := &server.Context{}
 	srvContext.Init(&config)
-
-	for i := 0; i < 1000; i++ {
-		fmt.Println(uuid.New().String())
-	}
 
 	// keys := make([]string, 0)
 	// for i := 0; i < 10000; i++ {

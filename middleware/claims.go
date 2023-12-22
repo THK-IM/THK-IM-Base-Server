@@ -5,13 +5,12 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/thk-im/thk-im-base-server/dto"
-	"github.com/thk-im/thk-im-base-server/server"
 	"strconv"
 )
 
 const ClaimsKey = "THK-Claims"
 
-func Claims(appCtx *server.Context) gin.HandlerFunc {
+func Claims() gin.HandlerFunc {
 	return func(context *gin.Context) {
 		claims := dto.ThkClaims{}
 		traceID := context.Request.Header.Get(dto.TraceID)
@@ -36,12 +35,18 @@ func Claims(appCtx *server.Context) gin.HandlerFunc {
 		claims.PutValue(dto.ParentSpanID, parentSpanID)
 		claims.PutValue(dto.SpanID, spanID)
 
-		clientIP := context.Request.Header.Get(dto.ClientIP)
-		claims.PutValue(dto.ClientIP, clientIP)
+		clientIP := context.Request.Header.Get(dto.ClientOriginIP)
+		if clientIP == "" {
+			clientIP = context.ClientIP()
+		}
+		claims.PutValue(dto.ClientOriginIP, clientIP)
+
 		clientPlatform := context.Request.Header.Get(dto.ClientPlatform)
 		claims.PutValue(dto.ClientPlatform, clientPlatform)
+
 		clientVersion := context.Request.Header.Get(dto.ClientVersion)
 		claims.PutValue(dto.ClientVersion, clientVersion)
+
 		lang := context.Request.Header.Get(dto.Language)
 		claims.PutValue(dto.Language, lang)
 
