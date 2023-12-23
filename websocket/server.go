@@ -211,21 +211,8 @@ func (server *WsServer) onNewConn(ws *websocket.Conn) {
 	claims.PutValue(dto.ClientVersion, ws.Request().Header.Get(dto.ClientVersion))
 	claims.PutValue(dto.ClientOriginIP, ws.Request().Header.Get(dto.ClientOriginIP))
 	claims.PutValue(dto.ClientPlatform, ws.Request().Header.Get(dto.ClientPlatform))
-	parentSpanID := ws.Request().Header.Get(dto.SpanID)
-	spanID := ""
-	if parentSpanID == "" {
-		parentSpanID = "0"
-		spanID = "1"
-	} else {
-		i, err := strconv.Atoi(parentSpanID)
-		if err == nil {
-			spanID = fmt.Sprintf("%d", i+1)
-		} else {
-			spanID = "1"
-		}
-	}
-	claims.PutValue(dto.ParentSpanID, parentSpanID)
-	claims.PutValue(dto.SpanID, spanID)
+	claims.PutValue(dto.ParentSpanID, ws.Request().Header.Get(dto.ParentSpanID))
+	claims.PutValue(dto.SpanID, ws.Request().Header.Get(dto.SpanID))
 
 	if server.curCount.Load() >= server.conf.MaxClient {
 		_ = ws.Close()
@@ -255,11 +242,14 @@ func (server *WsServer) getToken(ctx *gin.Context) error {
 	claims := ctx.MustGet(middleware.ClaimsKey).(dto.ThkClaims)
 	uid, err := server.UidGetter(claims)
 	if err == nil {
+		ctx.Request.Header.Set(dto.JwtToken, claims.GetToken())
 		ctx.Request.Header.Set(dto.TraceID, claims.GetTraceId())
 		ctx.Request.Header.Set(dto.Language, claims.GetLanguage())
 		ctx.Request.Header.Set(dto.ClientVersion, claims.GetClientVersion())
 		ctx.Request.Header.Set(dto.ClientOriginIP, claims.GetClientOriginIP())
 		ctx.Request.Header.Set(dto.ClientPlatform, claims.GetClientPlatform())
+		ctx.Request.Header.Set(dto.ParentSpanID, claims.GetParentSpanID())
+		ctx.Request.Header.Set(dto.SpanID, claims.GetSpanID())
 		ctx.Request.Header.Set(UidKey, fmt.Sprintf("%d", uid))
 	}
 	return err
