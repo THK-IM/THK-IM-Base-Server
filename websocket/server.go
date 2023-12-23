@@ -205,11 +205,27 @@ func (server *WsServer) SetOnClientMsgReceived(r OnClientMsgReceived) {
 
 func (server *WsServer) onNewConn(ws *websocket.Conn) {
 	claims := dto.ThkClaims{}
+	claims.PutValue(dto.JwtToken, ws.Request().Header.Get(dto.JwtToken))
 	claims.PutValue(dto.TraceID, ws.Request().Header.Get(dto.TraceID))
 	claims.PutValue(dto.Language, ws.Request().Header.Get(dto.Language))
-	claims.PutValue(dto.ClientVersion, ws.Request().Header.Get(dto.ClientPlatform))
-	claims.PutValue(dto.ClientOriginIP, ws.Request().Header.Get(dto.ClientPlatform))
+	claims.PutValue(dto.ClientVersion, ws.Request().Header.Get(dto.ClientVersion))
+	claims.PutValue(dto.ClientOriginIP, ws.Request().Header.Get(dto.ClientOriginIP))
 	claims.PutValue(dto.ClientPlatform, ws.Request().Header.Get(dto.ClientPlatform))
+	parentSpanID := ws.Request().Header.Get(dto.SpanID)
+	spanID := ""
+	if parentSpanID == "" {
+		parentSpanID = "0"
+		spanID = "1"
+	} else {
+		i, err := strconv.Atoi(parentSpanID)
+		if err == nil {
+			spanID = fmt.Sprintf("%d", i+1)
+		} else {
+			spanID = "1"
+		}
+	}
+	claims.PutValue(dto.ParentSpanID, parentSpanID)
+	claims.PutValue(dto.SpanID, spanID)
 
 	if server.curCount.Load() >= server.conf.MaxClient {
 		_ = ws.Close()
