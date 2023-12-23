@@ -183,7 +183,7 @@ func (server *WsServer) Init() error {
 	server.g.GET(server.conf.Uri, func(ctx *gin.Context) {
 		err := server.getToken(ctx)
 		if err != nil {
-			ctx.Status(http.StatusForbidden)
+			ctx.AbortWithStatus(http.StatusForbidden)
 		} else {
 			ws.ServeHTTP(ctx.Writer, ctx.Request)
 		}
