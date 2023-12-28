@@ -57,5 +57,6 @@ func Claims() gin.HandlerFunc {
 		claims.PutValue(dto.JwtToken, token)
 
 		context.Set(ClaimsKey, claims)
+		context.Next()
 	}
 }
