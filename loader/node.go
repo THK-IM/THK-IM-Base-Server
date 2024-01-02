@@ -36,7 +36,7 @@ func LoadNodeId(config *conf.Config, client *redis.Client) (workerId int64, star
 	}
 	workerId = 1
 	expireTime := nodeConfig.PollingInterval
-	for true {
+	for {
 		keys := []string{fmt.Sprintf("app/%s/%d", serverName, workerId)}
 		result, err := client.Eval(ctx, luaSetNodeId, keys, expireTime+5, startTime).Result()
 		if err != nil {

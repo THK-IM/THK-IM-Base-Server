@@ -9,13 +9,14 @@ import (
 
 func main() {
 
-	config, err := conf.Load("etc/server.yaml")
+	config := &conf.Config{}
+	err := conf.Load("etc/server.yaml", config)
 	if err != nil {
 		panic(err)
 	}
 
 	srvContext := &server.Context{}
-	srvContext.Init(&config)
+	srvContext.Init(config)
 
 	// keys := make([]string, 0)
 	// for i := 0; i < 10000; i++ {

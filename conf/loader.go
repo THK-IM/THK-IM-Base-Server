@@ -1,8 +1,8 @@
 package conf
 
 import (
+	"errors"
 	"flag"
-	"fmt"
 	"os"
 )
 
@@ -30,35 +30,19 @@ func getConfigPath() string {
 	}
 }
 
-func LoadConfig(path string) *Config {
-	var (
-		config Config
-		err    error
-	)
+func LoadConfig(path string, config interface{}) error {
 	consulAddress, consulKey := getConfigConsul()
 	if consulAddress != "" && consulKey != "" {
-		config, err = LoadFromConsul(consulAddress, consulKey)
-		if err != nil {
-			panic(fmt.Sprintf("config read error: %v", err))
-		}
-		return &config
+		return LoadFromConsul(consulAddress, consulKey, config)
 	}
 
 	confPath := getConfigPath()
 	if confPath != "" {
-		config, err = Load(confPath)
-		if err != nil {
-			panic(fmt.Sprintf("config read error: %v", err))
-		}
-		return &config
+		return Load(confPath, config)
 	}
 
 	if path != "" {
-		config, err = Load(path)
-		if err != nil {
-			panic(fmt.Sprintf("config read error: %v", err))
-		}
-		return &config
+		return Load(path, config)
 	}
-	panic("load config error")
+	return errors.New("config not init")
 }

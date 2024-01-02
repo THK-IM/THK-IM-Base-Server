@@ -145,24 +145,24 @@ type (
 	}
 )
 
-func Load(f string) (c Config, err error) {
+func Load(f string, c interface{}) (err error) {
 	fmt.Println("Load ", f)
 	data, e := os.ReadFile(f)
 	if e != nil {
-		return c, e
+		return e
 	}
 	expanded := os.ExpandEnv(string(data))
-	err = yaml.Unmarshal([]byte(expanded), &c)
-	return c, err
+	err = yaml.Unmarshal([]byte(expanded), c)
+	return err
 }
 
-func LoadString(data string) (c Config, err error) {
+func LoadString(data string, c interface{}) (err error) {
 	expanded := os.ExpandEnv(data)
-	err = yaml.Unmarshal([]byte(expanded), &c)
-	return c, err
+	err = yaml.Unmarshal([]byte(expanded), c)
+	return err
 }
 
-func LoadFromConsul(consulAddress, key string) (c Config, err error) {
+func LoadFromConsul(consulAddress, key string, c interface{}) (err error) {
 	config := consul.DefaultConfig()
 	config.Address = consulAddress
 	client, errClient := consul.NewClient(config)
@@ -173,6 +173,6 @@ func LoadFromConsul(consulAddress, key string) (c Config, err error) {
 	if errGet != nil {
 		panic(errGet)
 	} else {
-		return LoadString(string(pair.Value))
+		return LoadString(string(pair.Value), c)
 	}
 }
