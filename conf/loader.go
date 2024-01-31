@@ -10,10 +10,6 @@ var configConsulEndpoint = flag.String("config-consul-endpoint", "", "config con
 var configConsulKey = flag.String("config-consul-key", "", "config consul key")
 var configPath = flag.String("config-path", "", "config file path")
 
-func init() {
-	flag.Parse()
-}
-
 func getConfigConsul() (endpoint, key string) {
 	if *configConsulEndpoint != "" && *configConsulKey != "" {
 		return *configConsulEndpoint, *configConsulKey
@@ -31,6 +27,7 @@ func getConfigPath() string {
 }
 
 func LoadConfig(path string, config interface{}) error {
+	flag.Parse()
 	consulAddress, consulKey := getConfigConsul()
 	if consulAddress != "" && consulKey != "" {
 		return LoadFromConsul(consulAddress, consulKey, config)
