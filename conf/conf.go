@@ -20,11 +20,12 @@ type (
 	}
 
 	Logger struct {
-		IndexName   string `yaml:"IndexName"`
-		Dir         string `yaml:"Dir"`
-		Level       string `yaml:"Level"`
-		RetainAge   int    `yaml:"RetainAge"`   // 日志文件保留时间,单位:小时
-		RotationAge int    `yaml:"RotationAge"` // 日志文件翻转时间,单位:小时
+		IndexName       string `yaml:"IndexName"`
+		Dir             string `yaml:"Dir"`
+		Level           string `yaml:"Level"`
+		RetainAge       int    `yaml:"RetainAge"`   // 日志文件保留时间,单位:小时
+		RotationAge     int    `yaml:"RotationAge"` // 日志文件翻转时间,单位:小时
+		ElasticEndpoint string `yaml:"ElasticEndpoint"`
 	}
 
 	Sdk struct {

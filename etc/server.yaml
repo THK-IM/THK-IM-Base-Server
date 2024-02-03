@@ -22,6 +22,7 @@ Logger:
   Dir: logs
   RetainAge: 720
   RotationAge: 1
+  ElasticEndpoint: ${ELASTIC_ENDPOINT}
 RedisSource:
   Endpoint: ${REDIS_ENDPOINT}
   Uri: "/0"

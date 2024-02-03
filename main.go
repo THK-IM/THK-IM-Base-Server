@@ -1,10 +1,9 @@
 package main
 
 import (
-	"fmt"
 	"github.com/thk-im/thk-im-base-server/conf"
 	"github.com/thk-im/thk-im-base-server/server"
-	"github.com/thk-im/thk-im-base-server/utils"
+	"time"
 )
 
 func main() {
@@ -17,6 +16,12 @@ func main() {
 
 	srvContext := &server.Context{}
 	srvContext.Init(config)
+
+	for i := 0; i < 1000; i++ {
+		srvContext.Logger().Info("logger message:", i)
+	}
+
+	time.Sleep(time.Hour)
 
 	// keys := make([]string, 0)
 	// for i := 0; i < 10000; i++ {
@@ -50,17 +55,17 @@ func main() {
 	// 	fmt.Println(urlPath)
 	// }
 
-	token, errToken := utils.GenerateUserToken(1738134077011138097, srvContext.Config().Name, srvContext.Config().Cipher)
-	if errToken != nil {
-		fmt.Println(errToken)
-	} else {
-		fmt.Println(token)
-	}
-
-	id, errId := utils.CheckUserToken(token, srvContext.Config().Cipher)
-	if errId != nil {
-		fmt.Println(errId)
-	} else {
-		fmt.Println(id)
-	}
+	// token, errToken := utils.GenerateUserToken(1738134077011138097, srvContext.Config().Name, srvContext.Config().Cipher)
+	// if errToken != nil {
+	// 	fmt.Println(errToken)
+	// } else {
+	// 	fmt.Println(token)
+	// }
+	//
+	// id, errId := utils.CheckUserToken(token, srvContext.Config().Cipher)
+	// if errId != nil {
+	// 	fmt.Println(errId)
+	// } else {
+	// 	fmt.Println(id)
+	// }
 }
