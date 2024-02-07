@@ -151,12 +151,12 @@ func (app *Context) Init(config *conf.Config) {
 	if config.MsgQueue.Publishers != nil {
 		app.publisherMap = loader.LoadPublishers(config.MsgQueue.Publishers, nodeId, logger)
 	} else {
-		app.publisherMap = make(map[string]mq.Publisher, 0)
+		app.publisherMap = make(map[string]mq.Publisher)
 	}
 	if config.MsgQueue.Subscribers != nil {
 		app.subscriberMap = loader.LoadSubscribers(config.MsgQueue.Subscribers, nodeId, logger)
 	} else {
-		app.subscriberMap = make(map[string]mq.Subscriber, 0)
+		app.subscriberMap = make(map[string]mq.Subscriber)
 	}
 
 	if redisCache != nil {
