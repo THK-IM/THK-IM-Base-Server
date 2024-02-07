@@ -1,6 +1,8 @@
 package server
 
 import (
+	"context"
+	"errors"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/redis/go-redis/v9"
@@ -16,6 +18,11 @@ import (
 	"github.com/thk-im/thk-im-base-server/websocket"
 	"golang.org/x/text/language"
 	"gorm.io/gorm"
+	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
 )
 
 type Context struct {
@@ -170,10 +177,23 @@ func (app *Context) Init(config *conf.Config) {
 
 func (app *Context) StartServe() {
 	address := fmt.Sprintf("%s:%s", app.config.Host, app.config.Port)
-	fmt.Println("StartServe: ", address)
-	if e := app.httpEngine.Run(address); e != nil {
-		panic(e)
-	} else {
-		app.logger.Infof("%s server start at: %s", app.config.Name, address)
+	server := http.Server{
+		Addr:    address,
+		Handler: app.httpEngine,
 	}
+	go func() {
+		app.logger.Infof("%s server start at: %s", app.config.Name, address)
+		if err := server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
+			app.logger.Errorf("%s server start error: %v", app.config.Name, err)
+		}
+	}()
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+	<-quit
+	ctx, channel := context.WithTimeout(context.Background(), 20*time.Second)
+	defer channel()
+	if err := server.Shutdown(ctx); err != nil {
+		app.logger.Errorf("%s server start error: %v", app.config.Name, err)
+	}
+	app.logger.Infof("%s server end at: %v", app.config.Name, time.Now().UTC())
 }
