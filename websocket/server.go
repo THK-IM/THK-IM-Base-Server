@@ -167,7 +167,7 @@ func (server *WsServer) SendMessageToUsers(uIds []int64, msg string) (err error)
 	for _, c := range allClients {
 		e := c.WriteMessage(msg)
 		if e != nil {
-			server.logger.WithFields(logrus.Fields(c.Claims())).Errorf("client: %v, err, %s", c.Info(), err.Error())
+			server.logger.WithFields(logrus.Fields(c.Claims())).Errorf("client: %v, err, %s", c.Info(), e.Error())
 		}
 	}
 	return nil
