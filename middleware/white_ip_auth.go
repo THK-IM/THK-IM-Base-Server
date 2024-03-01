@@ -13,7 +13,7 @@ func WhiteIpAuth(ipWhiteList string, logger *logrus.Entry) gin.HandlerFunc {
 	return func(context *gin.Context) {
 		ip := context.ClientIP()
 		claims := context.MustGet(ClaimsKey).(dto.ThkClaims)
-		if isIpValid(ip, ips) {
+		if !isIpValid(ip, ips) {
 			logger.WithFields(logrus.Fields(claims)).Errorf("RemoteAddr forbidden: %s %v", ip, ips)
 			dto.ResponseForbidden(context)
 			context.Abort()
