@@ -21,6 +21,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 	"time"
 )
@@ -190,7 +191,12 @@ func (app *Context) StartServe() {
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	<-quit
-	ctx, channel := context.WithTimeout(context.Background(), 20*time.Second)
+
+	quitTime := 1 * time.Second
+	if !strings.EqualFold(app.Config().Mode, "Debug") {
+		quitTime = 20 * time.Second
+	}
+	ctx, channel := context.WithTimeout(context.Background(), quitTime)
 	defer channel()
 	if err := server.Shutdown(ctx); err != nil {
 		app.logger.Errorf("%s server start error: %v", app.config.Name, err)
