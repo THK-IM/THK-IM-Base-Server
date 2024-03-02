@@ -9,7 +9,7 @@ import (
 )
 
 func WhiteIpAuth(ipWhiteList string, logger *logrus.Entry) gin.HandlerFunc {
-	ips := strings.Split(ipWhiteList, ",")
+	ips := strings.Split(strings.ReplaceAll(ipWhiteList, " ", ""), ",")
 	return func(context *gin.Context) {
 		ip := context.ClientIP()
 		claims := context.MustGet(ClaimsKey).(dto.ThkClaims)
