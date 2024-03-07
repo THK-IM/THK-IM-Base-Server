@@ -9,12 +9,11 @@ import (
 
 var defaultHttpClient = http.Client{
 	Transport: &http.Transport{
-		MaxIdleConns:          20,
-		MaxIdleConnsPerHost:   60,
-		IdleConnTimeout:       20 * time.Second,
-		ResponseHeaderTimeout: time.Second,
-		ExpectContinueTimeout: time.Second,
+		MaxIdleConns:        20,
+		MaxIdleConnsPerHost: 60,
+		IdleConnTimeout:     20 * time.Second,
 	},
+	Timeout: time.Second,
 }
 
 type (
