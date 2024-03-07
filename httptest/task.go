@@ -13,7 +13,7 @@ var defaultHttpClient = http.Client{
 		MaxIdleConnsPerHost: 60,
 		IdleConnTimeout:     20 * time.Second,
 	},
-	Timeout: time.Second,
+	Timeout: 3 * time.Second,
 }
 
 type (
