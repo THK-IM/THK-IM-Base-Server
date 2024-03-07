@@ -193,7 +193,7 @@ func (app *Context) StartServe() {
 	<-quit
 
 	quitTime := 1 * time.Second
-	if !strings.EqualFold(app.Config().Mode, "Debug") {
+	if !strings.EqualFold(app.Config().Mode, conf.EnvDebug) {
 		quitTime = 20 * time.Second
 	}
 	ctx, channel := context.WithTimeout(context.Background(), quitTime)

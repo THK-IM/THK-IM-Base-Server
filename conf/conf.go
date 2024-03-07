@@ -10,6 +10,10 @@ import (
 const (
 	DeployBackend = "backend"
 	DeployExposed = "exposed"
+
+	EnvDebug   = "debug"
+	EnvTest    = "test"
+	EnvRelease = "release"
 )
 
 type (
