@@ -45,7 +45,7 @@ type WsServer struct {
 	conf                *conf.WebSocket
 	mutex               *sync.RWMutex
 	logger              *logrus.Entry // 日志打印
-	curCount            *atomic.Int64
+	connectCount        *atomic.Int64
 	OnClientMsgReceived OnClientMsgReceived
 	snowflakeNode       *snowflake.Node
 	UidGetter           UidGetter
@@ -55,18 +55,18 @@ type WsServer struct {
 }
 
 func NewServer(conf *conf.WebSocket, logger *logrus.Entry, g *gin.Engine, snowflakeNode *snowflake.Node, mode string) *WsServer {
-	curCount := &atomic.Int64{}
-	curCount.Store(0)
+	connectCount := &atomic.Int64{}
+	connectCount.Store(0)
 	mutex := &sync.RWMutex{}
 	return &WsServer{
 		g:             g,
 		mode:          mode,
 		logger:        logger,
 		conf:          conf,
-		curCount:      curCount,
+		connectCount:  connectCount,
 		mutex:         mutex,
 		snowflakeNode: snowflakeNode,
-		userClients:   make(map[int64][]Client, 0),
+		userClients:   make(map[int64][]Client),
 	}
 }
 
@@ -91,7 +91,7 @@ func (server *WsServer) AddClient(uid int64, client Client) (err error) {
 	clients = append(clients, client)
 	server.userClients[uid] = clients
 
-	server.curCount.Add(1)
+	server.connectCount.Add(1)
 	if server.OnClientConnected != nil {
 		server.OnClientConnected(client)
 	}
@@ -105,14 +105,14 @@ func (server *WsServer) RemoveClient(uid int64, reason string, client Client) (e
 		if len(clients) == 1 {
 			if clients[0].Info().Id == client.Info().Id {
 				delete(server.userClients, uid)
-				server.curCount.Add(-1)
+				server.connectCount.Add(-1)
 			}
 		} else {
 			for i := 0; i < len(clients); i++ {
 				if clients[i].Info().Id == client.Info().Id {
 					newClients := append(clients[:i], clients[i+1:]...)
 					server.userClients[uid] = newClients
-					server.curCount.Add(-1)
+					server.connectCount.Add(-1)
 					break
 				}
 			}
@@ -146,7 +146,7 @@ func (server *WsServer) SendMessage(uid int64, msg string) (err error) {
 	if ok {
 		for _, c := range clients {
 			if e := c.WriteMessage(msg); e != nil {
-				server.logger.Errorf("client: %s, err, %s", c.Info(), err.Error())
+				server.logger.WithFields(logrus.Fields(c.Claims())).Errorf("client: %v, err, %s", c.Info(), err.Error())
 			}
 		}
 	}
@@ -196,7 +196,7 @@ func (server *WsServer) Clients() map[int64][]Client {
 }
 
 func (server *WsServer) ClientCount() int64 {
-	return server.curCount.Load()
+	return server.connectCount.Load()
 }
 
 func (server *WsServer) SetOnClientMsgReceived(r OnClientMsgReceived) {
@@ -206,15 +206,20 @@ func (server *WsServer) SetOnClientMsgReceived(r OnClientMsgReceived) {
 func (server *WsServer) onNewConn(ws *websocket.Conn) {
 	claims := dto.ThkClaims{}
 	claims.PutValue(dto.JwtToken, ws.Request().Header.Get(dto.JwtToken))
+
+	claims.PutValue(dto.Device, ws.Request().Header.Get(dto.Device))
+	claims.PutValue(dto.Platform, ws.Request().Header.Get(dto.Platform))
+
+	claims.PutValue(dto.TimeZone, ws.Request().Header.Get(dto.TimeZone))
+	claims.PutValue(dto.Version, ws.Request().Header.Get(dto.Version))
+	claims.PutValue(dto.OriginIP, ws.Request().Header.Get(dto.OriginIP))
+
 	claims.PutValue(dto.TraceID, ws.Request().Header.Get(dto.TraceID))
 	claims.PutValue(dto.Language, ws.Request().Header.Get(dto.Language))
-	claims.PutValue(dto.ClientVersion, ws.Request().Header.Get(dto.ClientVersion))
-	claims.PutValue(dto.ClientOriginIP, ws.Request().Header.Get(dto.ClientOriginIP))
-	claims.PutValue(dto.ClientPlatform, ws.Request().Header.Get(dto.ClientPlatform))
 	claims.PutValue(dto.ParentSpanID, ws.Request().Header.Get(dto.ParentSpanID))
 	claims.PutValue(dto.SpanID, ws.Request().Header.Get(dto.SpanID))
 
-	if server.curCount.Load() >= server.conf.MaxClient {
+	if server.connectCount.Load() >= server.conf.MaxClient {
 		_ = ws.Close()
 		server.logger.WithFields(logrus.Fields(claims)).Infof("client count reach max count %d", server.conf.MaxClient)
 		return
@@ -243,11 +248,13 @@ func (server *WsServer) getToken(ctx *gin.Context) error {
 	uid, err := server.UidGetter(claims)
 	if err == nil {
 		ctx.Request.Header.Set(dto.JwtToken, claims.GetToken())
-		ctx.Request.Header.Set(dto.TraceID, claims.GetTraceId())
+		ctx.Request.Header.Set(dto.Device, claims.GetDevice())
+		ctx.Request.Header.Set(dto.Platform, claims.GetPlatform())
+		ctx.Request.Header.Set(dto.TimeZone, claims.GetTimeZone())
 		ctx.Request.Header.Set(dto.Language, claims.GetLanguage())
-		ctx.Request.Header.Set(dto.ClientVersion, claims.GetClientVersion())
-		ctx.Request.Header.Set(dto.ClientOriginIP, claims.GetClientOriginIP())
-		ctx.Request.Header.Set(dto.ClientPlatform, claims.GetClientPlatform())
+		ctx.Request.Header.Set(dto.Version, claims.GetVersion())
+		ctx.Request.Header.Set(dto.OriginIP, claims.GetOriginIp())
+		ctx.Request.Header.Set(dto.TraceID, claims.GetTraceId())
 		ctx.Request.Header.Set(dto.ParentSpanID, claims.GetParentSpanID())
 		ctx.Request.Header.Set(dto.SpanID, claims.GetSpanID())
 		ctx.Request.Header.Set(UidKey, fmt.Sprintf("%d", uid))

@@ -27,15 +27,15 @@ type Client interface {
 type WsClient struct {
 	isClosed bool
 	server   *WsServer
-	logger   *logrus.Entry // 日志打印
-	info     *ClientInfo   // 用户信息
-	claim    dto.ThkClaims // 用户数据
 	ws       *websocket.Conn
 	locker   *sync.Mutex
+	logger   *logrus.Entry // 日志打印
+	info     *ClientInfo   // 用户信息
+	claims   dto.ThkClaims // 用户数据
 }
 
 func (w *WsClient) Claims() dto.ThkClaims {
-	return w.claim
+	return w.claims
 }
 
 func (w *WsClient) LastOnlineTime() int64 {
@@ -127,7 +127,7 @@ func (w *WsClient) Info() *ClientInfo {
 	return w.info
 }
 
-func NewClient(ws *websocket.Conn, id, uId int64, claim dto.ThkClaims, server *WsServer) Client {
+func NewClient(ws *websocket.Conn, id, uId int64, claims dto.ThkClaims, server *WsServer) Client {
 	onLineTime := time.Now().UnixMilli()
 	info := ClientInfo{
 		Id:              id,
@@ -137,11 +137,11 @@ func NewClient(ws *websocket.Conn, id, uId int64, claim dto.ThkClaims, server *W
 	}
 	return &WsClient{
 		server:   server,
-		logger:   server.logger.WithFields(logrus.Fields(claim)).WithField("uid", uId),
+		logger:   server.logger.WithFields(logrus.Fields(claims)).WithField("uid", uId),
 		ws:       ws,
 		info:     &info,
 		isClosed: false,
 		locker:   &sync.Mutex{},
-		claim:    claim,
+		claims:   claims,
 	}
 }
