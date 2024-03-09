@@ -9,14 +9,14 @@ import (
 	"strings"
 )
 
-const ClaimsKey = "THK-Claims"
+const ClaimsKey = "Claims"
 
 func Claims() gin.HandlerFunc {
 	return func(context *gin.Context) {
 		claims := dto.ThkClaims{}
 		traceID := context.Request.Header.Get(dto.TraceID)
-		if traceID == "" {
-			traceID = uuid.New().String()
+		if strings.EqualFold(traceID, "") {
+			traceID = uuid.NewString()
 		}
 		claims.PutValue(dto.TraceID, traceID)
 
@@ -36,20 +36,23 @@ func Claims() gin.HandlerFunc {
 		claims.PutValue(dto.ParentSpanID, parentSpanID)
 		claims.PutValue(dto.SpanID, spanID)
 
-		clientIP := context.Request.Header.Get(dto.ClientOriginIP)
+		clientIP := context.Request.Header.Get(dto.OriginIP)
 		if clientIP == "" {
 			clientIP = context.ClientIP()
 		}
-		claims.PutValue(dto.ClientOriginIP, clientIP)
+		claims.PutValue(dto.OriginIP, clientIP)
 
-		clientPlatform := context.Request.Header.Get(dto.ClientPlatform)
-		claims.PutValue(dto.ClientPlatform, clientPlatform)
+		device := context.Request.Header.Get(dto.Device)
+		claims.PutValue(dto.Device, device)
 
-		clientVersion := context.Request.Header.Get(dto.ClientVersion)
-		claims.PutValue(dto.ClientVersion, clientVersion)
+		platform := context.Request.Header.Get(dto.Platform)
+		claims.PutValue(dto.Platform, platform)
 
-		lang := context.Request.Header.Get(dto.Language)
-		claims.PutValue(dto.Language, lang)
+		version := context.Request.Header.Get(dto.Version)
+		claims.PutValue(dto.Version, version)
+
+		language := context.Request.Header.Get(dto.Language)
+		claims.PutValue(dto.Language, language)
 
 		token := context.Request.Header.Get(dto.JwtToken)
 		token = strings.ReplaceAll(token, "Bearer ", "")

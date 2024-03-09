@@ -5,14 +5,15 @@ import "github.com/sirupsen/logrus"
 type ThkClaims logrus.Fields
 
 const (
-	TraceID        = "TraceID"
-	ParentSpanID   = "ParentSpanID"
-	SpanID         = "SpanID"
-	Language       = "Accept-Language"
-	JwtToken       = "Authorization"
-	ClientPlatform = "Client-Platform" // web/ios/android/centos/windows/apple
-	ClientVersion  = "Client-Version"
-	ClientOriginIP = "Client-Origin-IP"
+	TraceID      = "TraceID"
+	ParentSpanID = "ParentSpanID"
+	SpanID       = "SpanID"
+	Language     = "Accept-Language"
+	JwtToken     = "Authorization"
+	Device       = "Device"
+	Platform     = "Platform" // web/ios/android/centos/windows/apple
+	Version      = "Version"
+	OriginIP     = "Origin-IP"
 )
 
 func (m ThkClaims) PutValue(key string, value string) {
@@ -35,16 +36,20 @@ func (m ThkClaims) GetLanguage() string {
 	return m.getValue(Language)
 }
 
-func (m ThkClaims) GetClientPlatform() string {
-	return m.getValue(ClientPlatform)
+func (m ThkClaims) GetDevice() string {
+	return m.getValue(Device)
 }
 
-func (m ThkClaims) GetClientVersion() string {
-	return m.getValue(ClientVersion)
+func (m ThkClaims) GetPlatform() string {
+	return m.getValue(Platform)
 }
 
-func (m ThkClaims) GetClientOriginIP() string {
-	return m.getValue(ClientOriginIP)
+func (m ThkClaims) GetVersion() string {
+	return m.getValue(Version)
+}
+
+func (m ThkClaims) GetOriginIp() string {
+	return m.getValue(OriginIP)
 }
 
 func (m ThkClaims) GetToken() string {
