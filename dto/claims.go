@@ -11,6 +11,7 @@ const (
 	Language     = "Accept-Language"
 	JwtToken     = "Authorization"
 	Device       = "Device"
+	TimeZone     = "TimeZone"
 	Platform     = "Platform" // web/ios/android/centos/windows/apple
 	Version      = "Version"
 	OriginIP     = "Origin-IP"
@@ -38,6 +39,10 @@ func (m ThkClaims) GetLanguage() string {
 
 func (m ThkClaims) GetDevice() string {
 	return m.getValue(Device)
+}
+
+func (m ThkClaims) GetTimeZone() string {
+	return m.getValue(TimeZone)
 }
 
 func (m ThkClaims) GetPlatform() string {
