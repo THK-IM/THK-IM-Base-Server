@@ -45,7 +45,7 @@ func Claims() gin.HandlerFunc {
 		device := context.Request.Header.Get(dto.Device)
 		claims.PutValue(dto.Device, device)
 
-		timeZone := context.Request.Header.Get(dto.Device)
+		timeZone := context.Request.Header.Get(dto.TimeZone)
 		claims.PutValue(dto.TimeZone, timeZone)
 
 		platform := context.Request.Header.Get(dto.Platform)
