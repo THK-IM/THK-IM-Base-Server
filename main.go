@@ -1,27 +1,23 @@
 package main
 
-import (
-	"github.com/thk-im/thk-im-base-server/conf"
-	"github.com/thk-im/thk-im-base-server/server"
-	"time"
-)
+import "github.com/thk-im/thk-im-base-server/utils"
 
 func main() {
 
-	config := &conf.Config{}
-	err := conf.Load("etc/server.yaml", config)
-	if err != nil {
-		panic(err)
-	}
-
-	srvContext := &server.Context{}
-	srvContext.Init(config)
-
-	for i := 0; i < 1000; i++ {
-		srvContext.Logger().Info("logger message:", i)
-	}
-
-	time.Sleep(time.Hour)
+	// config := &conf.Config{}
+	// err := conf.Load("etc/server.yaml", config)
+	// if err != nil {
+	// 	panic(err)
+	// }
+	//
+	// srvContext := &server.Context{}
+	// srvContext.Init(config)
+	//
+	// for i := 0; i < 1000; i++ {
+	// 	srvContext.Logger().Info("logger message:", i)
+	// }
+	//
+	// time.Sleep(time.Hour)
 
 	// keys := make([]string, 0)
 	// for i := 0; i < 10000; i++ {
@@ -55,7 +51,7 @@ func main() {
 	// 	fmt.Println(urlPath)
 	// }
 
-	// token, errToken := utils.GenerateUserToken(1738134077011138097, srvContext.Config().Name, srvContext.Config().Cipher)
+	// token, errToken := utils.GenerateUserToken(1, "12313", "11111")
 	// if errToken != nil {
 	// 	fmt.Println(errToken)
 	// } else {
@@ -68,4 +64,18 @@ func main() {
 	// } else {
 	// 	fmt.Println(id)
 	// }
+
+	aes := utils.NewAES("1231311212313112", "1231311212313112")
+	result, err := aes.Encrypt([]byte("123123"))
+	if err != nil {
+		println(err)
+	} else {
+		println(result)
+		res, errE := aes.Decrypt(result)
+		if errE != nil {
+			println(errE)
+		} else {
+			println(string(res))
+		}
+	}
 }
