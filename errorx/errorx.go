@@ -9,8 +9,8 @@ import (
 )
 
 type ErrorX struct {
-	Code int    `json:"code"`
-	Msg  string `json:"msg"`
+	Code    int    `json:"code"`
+	Message string `json:"message"`
 }
 
 func NewErrorXFromResp(resp *resty.Response) *ErrorX {
@@ -26,19 +26,19 @@ func NewErrorXFromResp(resp *resty.Response) *ErrorX {
 	}
 	if err.Code == 0 {
 		err.Code = resp.StatusCode()
-		err.Msg = fmt.Sprintf("http status code %d", resp.StatusCode())
+		err.Message = fmt.Sprintf("http status code %d", resp.StatusCode())
 	}
 	return err
 }
 
-func NewErrorX(code int, msg string) *ErrorX {
-	return &ErrorX{Code: code, Msg: msg}
+func NewErrorX(code int, message string) *ErrorX {
+	return &ErrorX{Code: code, Message: message}
 }
 
-func New(msg string) *ErrorX {
-	return &ErrorX{Code: 0, Msg: msg}
+func New(message string) *ErrorX {
+	return &ErrorX{Code: 0, Message: message}
 }
 
 func (e *ErrorX) Error() string {
-	return fmt.Sprintf("[code: %d, msg: %s]", e.Code, e.Msg)
+	return fmt.Sprintf("[code: %d, message: %s]", e.Code, e.Message)
 }
