@@ -42,13 +42,13 @@ func ResponseInternalServerError(ctx *gin.Context, err error) {
 		if e.Code <= 5000000 {
 			rsp := &ErrorResponse{
 				Code:    e.Code,
-				Message: e.Msg,
+				Message: e.Message,
 			}
 			ctx.JSON(http.StatusBadRequest, rsp)
 		} else {
 			rsp := &ErrorResponse{
 				Code:    e.Code,
-				Message: e.Msg,
+				Message: e.Message,
 			}
 			ctx.JSON(http.StatusInternalServerError, rsp)
 		}
@@ -56,7 +56,7 @@ func ResponseInternalServerError(ctx *gin.Context, err error) {
 		e = errorx.ErrInternalServerError
 		rsp := &ErrorResponse{
 			Code:    e.Code,
-			Message: e.Msg,
+			Message: e.Message,
 		}
 		ctx.JSON(http.StatusInternalServerError, rsp)
 	}
