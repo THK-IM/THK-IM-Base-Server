@@ -109,12 +109,20 @@ func (app *Context) MsgPusherPublisher() mq.Publisher {
 	return app.publisherMap["push_msg"]
 }
 
+func (app *Context) MsgOfflinePusherPublisher() mq.Publisher {
+	return app.publisherMap["push_offline_msg"]
+}
+
 func (app *Context) MsgSaverPublisher() mq.Publisher {
 	return app.publisherMap["save_msg"]
 }
 
 func (app *Context) MsgPusherSubscriber() mq.Subscriber {
 	return app.subscriberMap["push_msg"]
+}
+
+func (app *Context) MsgOfflinePusherSubscriber() mq.Subscriber {
+	return app.subscriberMap["push_offline_msg"]
 }
 
 func (app *Context) MsgSaverSubscriber() mq.Subscriber {

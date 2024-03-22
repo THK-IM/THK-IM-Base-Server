@@ -9,7 +9,7 @@ import (
 
 func LoadPublishers(pubConfigs []*conf.Publisher, nodeId int64, logger *logrus.Entry) map[string]mq.Publisher {
 	clientId := fmt.Sprintf("%d", nodeId)
-	publisherMap := make(map[string]mq.Publisher, 0)
+	publisherMap := make(map[string]mq.Publisher)
 	for _, pubConfig := range pubConfigs {
 		if pubConfig.RedisPublisher != nil {
 			client := LoadRedis(pubConfig.RedisPublisher.RedisSource)
@@ -23,7 +23,7 @@ func LoadPublishers(pubConfigs []*conf.Publisher, nodeId int64, logger *logrus.E
 
 func LoadSubscribers(subConfigs []*conf.Subscriber, nodeId int64, logger *logrus.Entry) map[string]mq.Subscriber {
 	clientId := fmt.Sprintf("%d", nodeId)
-	subscriberMap := make(map[string]mq.Subscriber, 0)
+	subscriberMap := make(map[string]mq.Subscriber)
 	for _, subConfig := range subConfigs {
 		if subConfig.RedisSubscriber != nil {
 			client := LoadRedis(subConfig.RedisSubscriber.RedisSource)
