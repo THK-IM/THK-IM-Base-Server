@@ -131,6 +131,8 @@ type (
 	Config struct {
 		Name          string         `yaml:"Name"`
 		Cipher        string         `yaml:"Cipher"`
+		BodyCipher    string         `yaml:"BodyCipher"`
+		BodyCipherIV  string         `yaml:"BodyCipherIV"`
 		Host          string         `yaml:"Host"`
 		Port          string         `yaml:"Port"`
 		Mode          string         `yaml:"Mode"`
