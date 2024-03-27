@@ -44,7 +44,6 @@ type Context struct {
 	subscriberMap   map[string]mq.Subscriber
 	SdkMap          map[string]interface{}
 	ModelMap        map[string]interface{}
-	Crypto          crypto.Crypto
 }
 
 func (app *Context) SupportLanguage() []language.Tag {
@@ -143,9 +142,13 @@ func (app *Context) Init(config *conf.Config) {
 	if err != nil {
 		panic(err)
 	}
+	var cipher crypto.Crypto = nil
+	if len(config.BodyCipher) == 16 && len(config.BodyCipherIV) == 16 {
+		cipher = crypto.NewCrypto(config.BodyCipher, config.BodyCipherIV)
+	}
 	gin.SetMode(config.Mode)
 	httpEngine := gin.Default()
-	claimsMiddleware := middleware.Claims(app.Crypto)
+	claimsMiddleware := middleware.Claims(cipher)
 	httpEngine.Use(claimsMiddleware)
 	app.httpEngine = httpEngine
 	app.config = config
@@ -178,7 +181,7 @@ func (app *Context) Init(config *conf.Config) {
 		app.objectStorage = object.NewMinioStorage(logger, config.ObjectStorage)
 	}
 	if config.WebSocket != nil {
-		app.websocketServer = websocket.NewServer(config.WebSocket, logger, httpEngine, snowflakeNode, config.Mode)
+		app.websocketServer = websocket.NewServer(config.WebSocket, logger, httpEngine, snowflakeNode, cipher, config.Mode)
 	}
 
 	if config.Metric != nil {
