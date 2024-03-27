@@ -54,10 +54,10 @@ type WsServer struct {
 	userClients         map[int64][]Client
 	OnClientConnected   OnClientConnected
 	OnClientClosed      OnClientClosed
-	Crypto              crypto.Crypto
+	crypto              crypto.Crypto
 }
 
-func NewServer(conf *conf.WebSocket, logger *logrus.Entry, g *gin.Engine, snowflakeNode *snowflake.Node, mode string) *WsServer {
+func NewServer(conf *conf.WebSocket, logger *logrus.Entry, g *gin.Engine, snowflakeNode *snowflake.Node, crypto crypto.Crypto, mode string) *WsServer {
 	connectCount := &atomic.Int64{}
 	connectCount.Store(0)
 	mutex := &sync.RWMutex{}
@@ -70,6 +70,7 @@ func NewServer(conf *conf.WebSocket, logger *logrus.Entry, g *gin.Engine, snowfl
 		mutex:         mutex,
 		snowflakeNode: snowflakeNode,
 		userClients:   make(map[int64][]Client),
+		crypto:        crypto,
 	}
 }
 
@@ -144,8 +145,8 @@ func (server *WsServer) GetUserClient(uid int64) []Client {
 
 func (server *WsServer) SendMessage(uid int64, msg string) (err error) {
 	encryptMsg := msg
-	if server.Crypto != nil {
-		encryptMsg, err = server.Crypto.Encrypt([]byte(msg))
+	if server.crypto != nil {
+		encryptMsg, err = server.crypto.Encrypt([]byte(msg))
 		if err != nil {
 			return err
 		}
@@ -165,8 +166,8 @@ func (server *WsServer) SendMessage(uid int64, msg string) (err error) {
 
 func (server *WsServer) SendMessageToUsers(uIds []int64, msg string) (err error) {
 	encryptMsg := msg
-	if server.Crypto != nil {
-		encryptMsg, err = server.Crypto.Encrypt([]byte(msg))
+	if server.crypto != nil {
+		encryptMsg, err = server.crypto.Encrypt([]byte(msg))
 		if err != nil {
 			return err
 		}
@@ -192,8 +193,8 @@ func (server *WsServer) SendMessageToUsers(uIds []int64, msg string) (err error)
 
 func (server *WsServer) OnClientMsg(client Client, msg string) {
 	decryptMsg := msg
-	if server.Crypto != nil {
-		decryptData, errDecrypt := server.Crypto.Decrypt(msg)
+	if server.crypto != nil {
+		decryptData, errDecrypt := server.crypto.Decrypt(msg)
 		if errDecrypt != nil {
 			server.logger.WithFields(logrus.Fields(client.Claims())).Errorf("client: %v, err, %s", client.Info(), errDecrypt)
 			return
