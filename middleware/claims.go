@@ -1,17 +1,34 @@
 package middleware
 
 import (
+	"bytes"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"github.com/thk-im/thk-im-base-server/crypto"
 	"github.com/thk-im/thk-im-base-server/dto"
+	"io"
+	"net/http"
 	"strconv"
 	"strings"
 )
 
+type aesWriter struct {
+	gin.ResponseWriter
+	body *bytes.Buffer
+}
+
+func (w *aesWriter) Write(b []byte) (int, error) {
+	return w.body.Write(b)
+}
+
+func (w *aesWriter) WriteString(s string) (int, error) {
+	return w.body.WriteString(s)
+}
+
 const ClaimsKey = "Claims"
 
-func Claims() gin.HandlerFunc {
+func Claims(crypto crypto.Crypto) gin.HandlerFunc {
 	return func(context *gin.Context) {
 		claims := dto.ThkClaims{}
 		traceID := context.Request.Header.Get(dto.TraceID)
@@ -63,6 +80,40 @@ func Claims() gin.HandlerFunc {
 		claims.PutValue(dto.JwtToken, token)
 
 		context.Set(ClaimsKey, claims)
+
+		oldWriter := context.Writer
+		blw := &aesWriter{body: bytes.NewBufferString(""), ResponseWriter: context.Writer}
+
+		if parentSpanID == "0" && crypto != nil {
+			// 需要解密请求
+			rawData, err := context.GetRawData()
+			if err != nil {
+				context.AbortWithStatus(http.StatusInternalServerError)
+				return
+			}
+			if len(rawData) > 0 {
+				deData, errDecrypt := crypto.Decrypt(string(rawData))
+				if errDecrypt != nil {
+					context.AbortWithStatus(http.StatusBadRequest)
+					return
+				}
+				context.Request.Body = io.NopCloser(bytes.NewBuffer(deData))
+			}
+			context.Writer = blw
+		}
 		context.Next()
+
+		if parentSpanID == "0" && crypto != nil {
+			// 需要加密
+			context.Writer = oldWriter
+			responseBytes := blw.body.Bytes()
+			crData, errCrypt := crypto.Encrypt(responseBytes)
+			if errCrypt != nil {
+				context.AbortWithStatus(http.StatusInternalServerError)
+				return
+			}
+			_, _ = context.Writer.WriteString(crData)
+		}
+
 	}
 }

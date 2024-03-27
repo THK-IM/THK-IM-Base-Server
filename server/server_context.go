@@ -8,6 +8,7 @@ import (
 	"github.com/redis/go-redis/v9"
 	"github.com/sirupsen/logrus"
 	"github.com/thk-im/thk-im-base-server/conf"
+	"github.com/thk-im/thk-im-base-server/crypto"
 	"github.com/thk-im/thk-im-base-server/loader"
 	"github.com/thk-im/thk-im-base-server/locker"
 	"github.com/thk-im/thk-im-base-server/metric"
@@ -43,6 +44,7 @@ type Context struct {
 	subscriberMap   map[string]mq.Subscriber
 	SdkMap          map[string]interface{}
 	ModelMap        map[string]interface{}
+	Crypto          crypto.Crypto
 }
 
 func (app *Context) SupportLanguage() []language.Tag {
@@ -143,7 +145,7 @@ func (app *Context) Init(config *conf.Config) {
 	}
 	gin.SetMode(config.Mode)
 	httpEngine := gin.Default()
-	claimsMiddleware := middleware.Claims()
+	claimsMiddleware := middleware.Claims(app.Crypto)
 	httpEngine.Use(claimsMiddleware)
 	app.httpEngine = httpEngine
 	app.config = config

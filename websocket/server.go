@@ -5,6 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 	"github.com/thk-im/thk-im-base-server/conf"
+	"github.com/thk-im/thk-im-base-server/crypto"
 	"github.com/thk-im/thk-im-base-server/dto"
 	"github.com/thk-im/thk-im-base-server/middleware"
 	"github.com/thk-im/thk-im-base-server/snowflake"
@@ -37,6 +38,7 @@ type Server interface {
 	RemoveClient(uid int64, reason string, client Client) error
 	SendMessage(uid int64, msg string) (err error)
 	SendMessageToUsers(uIds []int64, msg string) (err error)
+	OnClientMsg(client Client, msg string)
 }
 
 type WsServer struct {
@@ -46,12 +48,13 @@ type WsServer struct {
 	mutex               *sync.RWMutex
 	logger              *logrus.Entry // 日志打印
 	connectCount        *atomic.Int64
-	OnClientMsgReceived OnClientMsgReceived
+	onClientMsgReceived OnClientMsgReceived
 	snowflakeNode       *snowflake.Node
 	UidGetter           UidGetter
 	userClients         map[int64][]Client
 	OnClientConnected   OnClientConnected
 	OnClientClosed      OnClientClosed
+	Crypto              crypto.Crypto
 }
 
 func NewServer(conf *conf.WebSocket, logger *logrus.Entry, g *gin.Engine, snowflakeNode *snowflake.Node, mode string) *WsServer {
@@ -140,12 +143,19 @@ func (server *WsServer) GetUserClient(uid int64) []Client {
 }
 
 func (server *WsServer) SendMessage(uid int64, msg string) (err error) {
+	encryptMsg := msg
+	if server.Crypto != nil {
+		encryptMsg, err = server.Crypto.Encrypt([]byte(msg))
+		if err != nil {
+			return err
+		}
+	}
 	server.mutex.RLock()
 	clients, ok := server.userClients[uid]
 	server.mutex.RUnlock()
 	if ok {
 		for _, c := range clients {
-			if e := c.WriteMessage(msg); e != nil {
+			if e := c.WriteMessage(encryptMsg); e != nil {
 				server.logger.WithFields(logrus.Fields(c.Claims())).Errorf("client: %v, err, %s", c.Info(), err.Error())
 			}
 		}
@@ -154,6 +164,13 @@ func (server *WsServer) SendMessage(uid int64, msg string) (err error) {
 }
 
 func (server *WsServer) SendMessageToUsers(uIds []int64, msg string) (err error) {
+	encryptMsg := msg
+	if server.Crypto != nil {
+		encryptMsg, err = server.Crypto.Encrypt([]byte(msg))
+		if err != nil {
+			return err
+		}
+	}
 	server.mutex.RLock()
 	allClients := make([]Client, 0)
 	for _, uid := range uIds {
@@ -165,12 +182,25 @@ func (server *WsServer) SendMessageToUsers(uIds []int64, msg string) (err error)
 	server.mutex.RUnlock()
 	server.logger.Info("SendMessageToUsers", uIds, len(allClients))
 	for _, c := range allClients {
-		e := c.WriteMessage(msg)
+		e := c.WriteMessage(encryptMsg)
 		if e != nil {
 			server.logger.WithFields(logrus.Fields(c.Claims())).Errorf("client: %v, err, %s", c.Info(), e.Error())
 		}
 	}
 	return nil
+}
+
+func (server *WsServer) OnClientMsg(client Client, msg string) {
+	decryptMsg := msg
+	if server.Crypto != nil {
+		decryptData, errDecrypt := server.Crypto.Decrypt(msg)
+		if errDecrypt != nil {
+			server.logger.WithFields(logrus.Fields(client.Claims())).Errorf("client: %v, err, %s", client.Info(), errDecrypt)
+			return
+		}
+		decryptMsg = string(decryptData)
+	}
+	server.onClientMsgReceived(decryptMsg, client)
 }
 
 func (server *WsServer) Init() error {
@@ -200,7 +230,7 @@ func (server *WsServer) ClientCount() int64 {
 }
 
 func (server *WsServer) SetOnClientMsgReceived(r OnClientMsgReceived) {
-	server.OnClientMsgReceived = r
+	server.onClientMsgReceived = r
 }
 
 func (server *WsServer) onNewConn(ws *websocket.Conn) {

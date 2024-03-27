@@ -96,11 +96,7 @@ func (w *WsClient) read() {
 		}
 		reply := ""
 		if e := websocket.Message.Receive(w.ws, &reply); e == nil {
-			if w.server.OnClientMsgReceived != nil {
-				go w.server.OnClientMsgReceived(reply, w)
-			} else {
-				w.logger.Errorf("read message, receive handler is nil")
-			}
+			go w.server.OnClientMsg(w, reply)
 		} else {
 			w.logger.Errorf("read message error %v %v ", w.info, e)
 			if err := w.server.RemoveClient(w.info.UId, e.Error(), w); err != nil {
