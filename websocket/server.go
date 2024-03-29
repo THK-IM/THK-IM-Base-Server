@@ -144,19 +144,12 @@ func (server *WsServer) GetUserClient(uid int64) []Client {
 }
 
 func (server *WsServer) SendMessage(uid int64, msg string) (err error) {
-	encryptMsg := msg
-	if server.crypto != nil {
-		encryptMsg, err = server.crypto.Encrypt([]byte(msg))
-		if err != nil {
-			return err
-		}
-	}
 	server.mutex.RLock()
 	clients, ok := server.userClients[uid]
 	server.mutex.RUnlock()
 	if ok {
 		for _, c := range clients {
-			if e := c.WriteMessage(encryptMsg); e != nil {
+			if e := c.WriteMessage(msg); e != nil {
 				server.logger.WithFields(logrus.Fields(c.Claims())).Errorf("client: %v, err, %s", c.Info(), err.Error())
 			}
 		}

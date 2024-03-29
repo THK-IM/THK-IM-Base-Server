@@ -69,7 +69,15 @@ func (w *WsClient) WriteMessage(msg string) error {
 	}
 	w.locker.Lock()
 	defer w.locker.Unlock()
-	err := websocket.Message.Send(w.ws, msg)
+	encryptMsg := msg
+	if w.server.crypto != nil {
+		encryptMessage, errEncrypt := w.server.crypto.Encrypt([]byte(msg))
+		if errEncrypt != nil {
+			return errEncrypt
+		}
+		encryptMsg = encryptMessage
+	}
+	err := websocket.Message.Send(w.ws, encryptMsg)
 	if err != nil {
 		w.logger.Errorf("WriteMessage: %v %v", msg, err)
 		return err
