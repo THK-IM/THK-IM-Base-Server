@@ -81,11 +81,10 @@ func Claims(crypto crypto.Crypto) gin.HandlerFunc {
 
 		context.Set(ClaimsKey, claims)
 
-		oldWriter := context.Writer
-		blw := &aesWriter{body: bytes.NewBufferString(""), ResponseWriter: context.Writer}
-
 		if parentSpanID == "0" && crypto != nil {
-			// 需要解密请求
+			// 需要解密
+			oldWriter := context.Writer
+			blw := &aesWriter{body: bytes.NewBufferString(""), ResponseWriter: context.Writer}
 			rawData, err := context.GetRawData()
 			if err != nil {
 				context.AbortWithStatus(http.StatusInternalServerError)
@@ -100,10 +99,9 @@ func Claims(crypto crypto.Crypto) gin.HandlerFunc {
 				context.Request.Body = io.NopCloser(bytes.NewBuffer(deData))
 			}
 			context.Writer = blw
-		}
-		context.Next()
 
-		if parentSpanID == "0" && crypto != nil {
+			context.Next()
+
 			// 需要加密
 			context.Writer = oldWriter
 			responseBytes := blw.body.Bytes()
@@ -113,6 +111,8 @@ func Claims(crypto crypto.Crypto) gin.HandlerFunc {
 				return
 			}
 			_, _ = context.Writer.WriteString(crData)
+		} else {
+			context.Next()
 		}
 
 	}
