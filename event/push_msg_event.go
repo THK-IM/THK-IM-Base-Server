@@ -10,12 +10,13 @@ const (
 	// PushEventBodyKey 推送事件Body Key
 	PushEventBodyKey = "push_body_key"
 
-	SignalNewMessage  = 0
-	SignalHeatBeat    = 1
-	SignalSyncTime    = 2
-	SignalConnId      = 3
-	SignalKickOffUser = 4
-	SignalExtended    = 100
+	SignalNewMessage       = 0
+	SignalHeatBeat         = 1
+	SignalSyncTime         = 2
+	SignalConnId           = 3
+	SignalKickOffUser      = 4
+	SignalOtherDeviceLogin = 5
+	SignalExtended         = 100
 )
 
 type (
