@@ -40,8 +40,8 @@ type Context struct {
 	httpEngine      *gin.Engine
 	objectStorage   object.Storage
 	websocketServer websocket.Server
-	publisherMap    map[string]mq.Publisher
-	subscriberMap   map[string]mq.Subscriber
+	PublisherMap    map[string]mq.Publisher
+	SubscriberMap   map[string]mq.Subscriber
 	SdkMap          map[string]interface{}
 	ModelMap        map[string]interface{}
 }
@@ -103,35 +103,35 @@ func (app *Context) ObjectStorage() object.Storage {
 }
 
 func (app *Context) ServerEventPublisher() mq.Publisher {
-	return app.publisherMap["server_event"]
+	return app.PublisherMap["server_event"]
 }
 
 func (app *Context) MsgPusherPublisher() mq.Publisher {
-	return app.publisherMap["push_msg"]
+	return app.PublisherMap["push_msg"]
 }
 
 func (app *Context) MsgOfflinePusherPublisher() mq.Publisher {
-	return app.publisherMap["push_offline_msg"]
+	return app.PublisherMap["push_offline_msg"]
 }
 
 func (app *Context) MsgSaverPublisher() mq.Publisher {
-	return app.publisherMap["save_msg"]
+	return app.PublisherMap["save_msg"]
 }
 
 func (app *Context) MsgPusherSubscriber() mq.Subscriber {
-	return app.subscriberMap["push_msg"]
+	return app.SubscriberMap["push_msg"]
 }
 
 func (app *Context) MsgOfflinePusherSubscriber() mq.Subscriber {
-	return app.subscriberMap["push_offline_msg"]
+	return app.SubscriberMap["push_offline_msg"]
 }
 
 func (app *Context) MsgSaverSubscriber() mq.Subscriber {
-	return app.subscriberMap["save_msg"]
+	return app.SubscriberMap["save_msg"]
 }
 
 func (app *Context) ServerEventSubscriber() mq.Subscriber {
-	return app.subscriberMap["server_event"]
+	return app.SubscriberMap["server_event"]
 }
 
 func (app *Context) Init(config *conf.Config) {
@@ -163,14 +163,14 @@ func (app *Context) Init(config *conf.Config) {
 	}
 
 	if config.MsgQueue.Publishers != nil {
-		app.publisherMap = loader.LoadPublishers(config.MsgQueue.Publishers, nodeId, logger)
+		app.PublisherMap = loader.LoadPublishers(config.MsgQueue.Publishers, nodeId, logger)
 	} else {
-		app.publisherMap = make(map[string]mq.Publisher)
+		app.PublisherMap = make(map[string]mq.Publisher)
 	}
 	if config.MsgQueue.Subscribers != nil {
-		app.subscriberMap = loader.LoadSubscribers(config.MsgQueue.Subscribers, nodeId, logger)
+		app.SubscriberMap = loader.LoadSubscribers(config.MsgQueue.Subscribers, nodeId, logger)
 	} else {
-		app.subscriberMap = make(map[string]mq.Subscriber)
+		app.SubscriberMap = make(map[string]mq.Subscriber)
 	}
 
 	if redisCache != nil {
