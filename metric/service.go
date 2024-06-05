@@ -93,7 +93,7 @@ func NewService(serverName string, nodeId int64, logger *logrus.Entry) *Service 
 	return s
 }
 
-func (s *Service) initMetrics(extraMetrics ...*Metric) {
+func (s *Service) InitMetrics(extraMetrics ...*Metric) {
 	var metricsList []*Metric
 	for _, metric := range extraMetrics {
 		metricsList = append(metricsList, metric)
