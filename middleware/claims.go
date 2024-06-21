@@ -77,7 +77,7 @@ func Claims(crypto crypto.Crypto) gin.HandlerFunc {
 		token = strings.ReplaceAll(token, " ", "")
 		claims.PutValue(dto.JwtToken, token)
 
-		context.Set(ClaimsKey, claims)
+		context.Set(dto.ClaimsKey, claims)
 
 		if parentSpanID == "0" && crypto != nil {
 			// 需要解密
