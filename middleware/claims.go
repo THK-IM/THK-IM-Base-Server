@@ -81,7 +81,7 @@ func Claims(crypto crypto.Crypto) gin.HandlerFunc {
 
 		context.Set(ClaimsKey, claims)
 
-		if parentSpanID == "0" && crypto != nil && context.Request.RequestURI != "metrics" {
+		if parentSpanID == "0" && crypto != nil && context.Request.RequestURI != "/metrics" {
 			// 需要解密
 			oldWriter := context.Writer
 			blw := &aesWriter{body: bytes.NewBufferString(""), ResponseWriter: context.Writer}
