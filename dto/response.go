@@ -26,6 +26,8 @@ func ResponseForbidden(ctx *gin.Context) {
 		Code:    http.StatusForbidden,
 		Message: "StatusForbidden",
 	}
+	claims := ctx.MustGet(ClaimsKey).(ThkClaims)
+	rsp.Localize(claims.GetLanguage())
 	ctx.JSON(http.StatusForbidden, rsp)
 }
 

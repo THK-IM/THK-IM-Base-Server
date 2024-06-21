@@ -196,7 +196,12 @@ func (app *Context) Init(config *conf.Config) {
 	if config.Metric != nil {
 		app.metricService = metric.NewService(config.Name, nodeId, logger)
 		app.metricService.InitMetrics()
-		app.metricService.SetPushGateway(config.Name, config.Metric.PushGateway, config.Metric.Endpoint, time.Duration(config.Metric.PushInterval)*time.Second)
+		app.metricService.Use(httpEngine)
+		if config.Metric.PushGateway != "" && config.Metric.Endpoint != "" {
+			app.metricService.SetPushGateway(config.Name, config.Metric.PushGateway, config.Metric.Endpoint,
+				time.Duration(config.Metric.PushInterval)*time.Second,
+			)
+		}
 	}
 }
 
