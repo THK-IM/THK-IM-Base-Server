@@ -238,7 +238,7 @@ func (s *Service) registerMetrics(serverName string) {
 	for _, metricDef := range s.MetricsList {
 		metric := s.newMetric(metricDef, serverName)
 		if err := prometheus.Register(metric); err != nil {
-			s.logger.Errorf("%s could not be registered in MetricServer", metricDef.Name)
+			s.logger.Errorf("%s could not be registered in MetricServer, error: %v", metricDef.Name, err)
 		}
 		switch metricDef {
 		case reqCnt:
