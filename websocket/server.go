@@ -7,7 +7,6 @@ import (
 	"github.com/thk-im/thk-im-base-server/conf"
 	"github.com/thk-im/thk-im-base-server/crypto"
 	"github.com/thk-im/thk-im-base-server/dto"
-	"github.com/thk-im/thk-im-base-server/middleware"
 	"github.com/thk-im/thk-im-base-server/snowflake"
 	"golang.org/x/net/websocket"
 	"net/http"
@@ -261,7 +260,7 @@ func (server *WsServer) onNewConn(ws *websocket.Conn) {
 }
 
 func (server *WsServer) getToken(ctx *gin.Context) error {
-	claims := ctx.MustGet(middleware.ClaimsKey).(dto.ThkClaims)
+	claims := ctx.MustGet(dto.ClaimsKey).(dto.ThkClaims)
 	uid, err := server.UidGetter(claims)
 	if err == nil {
 		ctx.Request.Header.Set(dto.JwtToken, claims.GetToken())
