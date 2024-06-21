@@ -145,7 +145,7 @@ func (s *Service) sendMetricsToPushGateway(metrics []byte) {
 }
 
 func (s *Service) startPushTicker() {
-	ticker := time.NewTicker(time.Second * s.PushGateway.PushIntervalSeconds)
+	ticker := time.NewTicker(s.PushGateway.PushIntervalSeconds)
 	go func() {
 		for range ticker.C {
 			m, err := s.getMetrics()
