@@ -32,7 +32,6 @@ import (
 type Context struct {
 	startTime       int64
 	nodeId          int64
-	localize        i18n.Localize
 	metricService   *metric.Service
 	config          *conf.Config
 	logger          *logrus.Entry
@@ -50,8 +49,11 @@ type Context struct {
 }
 
 func (app *Context) SupportLanguage() []language.Tag {
-	languages := app.localize.GetSupportedLanguages()
-	tags := make([]language.Tag, 0, len(languages))
+	tags := make([]language.Tag, 0)
+	if dto.Localize == nil {
+		return tags
+	}
+	languages := dto.Localize.GetSupportedLanguages()
 	for _, l := range languages {
 		tag := language.Make(l)
 		tags = append(tags, tag)
@@ -156,7 +158,6 @@ func (app *Context) Init(config *conf.Config) {
 	httpEngine := gin.Default()
 	claimsMiddleware := middleware.Claims(cipher)
 	httpEngine.Use(claimsMiddleware)
-	app.localize = localize
 	dto.Localize = localize
 	app.httpEngine = httpEngine
 	app.config = config
