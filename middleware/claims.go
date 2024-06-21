@@ -26,6 +26,8 @@ func (w *aesWriter) WriteString(s string) (int, error) {
 	return w.body.WriteString(s)
 }
 
+const ClaimsKey = dto.ClaimsKey
+
 func Claims(crypto crypto.Crypto) gin.HandlerFunc {
 	return func(context *gin.Context) {
 		claims := dto.ThkClaims{}
@@ -77,7 +79,7 @@ func Claims(crypto crypto.Crypto) gin.HandlerFunc {
 		token = strings.ReplaceAll(token, " ", "")
 		claims.PutValue(dto.JwtToken, token)
 
-		context.Set(dto.ClaimsKey, claims)
+		context.Set(ClaimsKey, claims)
 
 		if parentSpanID == "0" && crypto != nil {
 			// 需要解密
