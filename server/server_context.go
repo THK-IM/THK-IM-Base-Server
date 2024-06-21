@@ -200,7 +200,7 @@ func (app *Context) StartServe() {
 	go func() {
 		app.logger.Infof("%s server start at: %s", app.config.Name, address)
 		if err := server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
-			app.logger.Errorf("%s server start error: %v", app.config.Name, err)
+			panic(fmt.Sprintf("%s server start error: %v", app.config.Name, err))
 		}
 	}()
 	quit := make(chan os.Signal, 1)
