@@ -44,6 +44,8 @@ func ResponseBadRequest(ctx *gin.Context) {
 		Code:    http.StatusBadRequest,
 		Message: "BadRequest",
 	}
+	claims := ctx.MustGet(ClaimsKey).(ThkClaims)
+	rsp.Localize(claims.GetLanguage())
 	ctx.JSON(http.StatusBadRequest, rsp)
 }
 
