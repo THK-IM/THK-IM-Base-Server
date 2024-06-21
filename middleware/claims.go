@@ -26,8 +26,6 @@ func (w *aesWriter) WriteString(s string) (int, error) {
 	return w.body.WriteString(s)
 }
 
-const ClaimsKey = "Claims"
-
 func Claims(crypto crypto.Crypto) gin.HandlerFunc {
 	return func(context *gin.Context) {
 		claims := dto.ThkClaims{}

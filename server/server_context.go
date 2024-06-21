@@ -9,6 +9,8 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/thk-im/thk-im-base-server/conf"
 	"github.com/thk-im/thk-im-base-server/crypto"
+	"github.com/thk-im/thk-im-base-server/dto"
+	"github.com/thk-im/thk-im-base-server/i18n"
 	"github.com/thk-im/thk-im-base-server/loader"
 	"github.com/thk-im/thk-im-base-server/locker"
 	"github.com/thk-im/thk-im-base-server/metric"
@@ -30,6 +32,7 @@ import (
 type Context struct {
 	startTime       int64
 	nodeId          int64
+	localize        i18n.Localize
 	metricService   *metric.Service
 	config          *conf.Config
 	logger          *logrus.Entry
@@ -47,11 +50,13 @@ type Context struct {
 }
 
 func (app *Context) SupportLanguage() []language.Tag {
-	return []language.Tag{
-		language.Chinese,
-		language.SimplifiedChinese,
-		language.TraditionalChinese,
+	languages := app.localize.GetSupportedLanguages()
+	tags := make([]language.Tag, 0, len(languages))
+	for _, l := range languages {
+		tag := language.Make(l)
+		tags = append(tags, tag)
 	}
+	return tags
 }
 
 func (app *Context) StartTime() int64 {
@@ -135,6 +140,7 @@ func (app *Context) ServerEventSubscriber() mq.Subscriber {
 }
 
 func (app *Context) Init(config *conf.Config) {
+	localize := i18n.NewLocalize("etc/localize")
 	logger := loader.LoadLogger(config.Name, config.Logger)
 	redisCache := loader.LoadRedis(config.RedisSource)
 	nodeId, startTime := loader.LoadNodeId(config, redisCache)
@@ -150,6 +156,8 @@ func (app *Context) Init(config *conf.Config) {
 	httpEngine := gin.Default()
 	claimsMiddleware := middleware.Claims(cipher)
 	httpEngine.Use(claimsMiddleware)
+	app.localize = localize
+	dto.Localize = localize
 	app.httpEngine = httpEngine
 	app.config = config
 	app.logger = logger

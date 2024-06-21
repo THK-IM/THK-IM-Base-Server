@@ -15,6 +15,8 @@ const (
 	Platform     = "Platform" // web/ios/android/centos/windows/apple
 	Version      = "Version"
 	OriginIP     = "Origin-IP"
+
+	ClaimsKey = "Claims"
 )
 
 func (m ThkClaims) PutValue(key string, value string) {
