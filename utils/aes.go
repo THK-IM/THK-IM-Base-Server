@@ -5,6 +5,7 @@ import (
 	"crypto/aes"
 	"crypto/cipher"
 	"encoding/base64"
+	"golang.org/x/crypto/openpgp/errors"
 )
 
 type AES struct {
@@ -43,7 +44,7 @@ func (a *AES) Decrypt(ciphertext string) ([]byte, error) {
 	decryptedData := make([]byte, len(decodedCiphertext))
 	mode := cipher.NewCBCDecrypter(block, a.iv)
 	mode.CryptBlocks(decryptedData, decodedCiphertext)
-	return a.pkcs7UnPadding(decryptedData), nil
+	return a.pkcs7UnPadding(decryptedData)
 }
 
 // 使用PKCS7填充方式对数据进行填充
@@ -54,14 +55,14 @@ func (a *AES) pkcs7Padding(data []byte, blockSize int) []byte {
 }
 
 // 对使用PKCS7填充方式的数据进行去填充
-func (a *AES) pkcs7UnPadding(data []byte) []byte {
+func (a *AES) pkcs7UnPadding(data []byte) ([]byte, error) {
 	length := len(data)
 	if length < 1 {
-		return []byte{}
+		return nil, errors.ErrKeyIncorrect
 	}
 	unPadding := int(data[length-1])
 	if length < unPadding {
-		return []byte{}
+		return nil, errors.ErrKeyIncorrect
 	}
-	return data[:(length - unPadding)]
+	return data[:(length - unPadding)], nil
 }
