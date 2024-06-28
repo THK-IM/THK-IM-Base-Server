@@ -56,6 +56,12 @@ func (a *AES) pkcs7Padding(data []byte, blockSize int) []byte {
 // 对使用PKCS7填充方式的数据进行去填充
 func (a *AES) pkcs7UnPadding(data []byte) []byte {
 	length := len(data)
+	if length < 1 {
+		return []byte{}
+	}
 	unPadding := int(data[length-1])
+	if length < unPadding {
+		return []byte{}
+	}
 	return data[:(length - unPadding)]
 }
