@@ -91,7 +91,7 @@ func Claims(crypto crypto.Crypto) gin.HandlerFunc {
 				return
 			}
 			if len(rawData) > 0 {
-				deData, errDecrypt := crypto.Decrypt(string(rawData))
+				deData, errDecrypt := crypto.DecryptUriBody(context.Request.RequestURI, string(rawData))
 				if errDecrypt != nil {
 					context.AbortWithStatus(http.StatusBadRequest)
 					return
@@ -105,7 +105,7 @@ func Claims(crypto crypto.Crypto) gin.HandlerFunc {
 			// 需要加密
 			context.Writer = oldWriter
 			responseBytes := blw.body.Bytes()
-			crData, errCrypt := crypto.Encrypt(responseBytes)
+			crData, errCrypt := crypto.EncryptUriBody(context.Request.RequestURI, responseBytes)
 			if errCrypt != nil {
 				context.AbortWithStatus(http.StatusInternalServerError)
 				return

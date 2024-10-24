@@ -150,14 +150,14 @@ func (app *Context) Init(config *conf.Config) {
 	if err != nil {
 		panic(err)
 	}
-	var cipher crypto.Crypto = nil
-	if len(config.BodyCipher) == 16 && len(config.BodyCipherIV) == 16 {
-		cipher = crypto.NewCrypto(config.BodyCipher, config.BodyCipherIV)
-	}
 	gin.SetMode(config.Mode)
 	httpEngine := gin.Default()
-	claimsMiddleware := middleware.Claims(cipher)
-	httpEngine.Use(claimsMiddleware)
+	var cipher crypto.Crypto = nil
+	if len(config.BodyCipher) == 16 && len(config.BodyCipherIV) == 16 {
+		cipher = crypto.NewCrypto(config.BodyCipher, config.BodyCipherIV, config.BodyCipherWhiteList)
+		claimsMiddleware := middleware.Claims(cipher)
+		httpEngine.Use(claimsMiddleware)
+	}
 	dto.Localize = localize
 	app.httpEngine = httpEngine
 	app.config = config

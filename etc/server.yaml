@@ -5,6 +5,7 @@ Port: 10000
 Mode: debug
 BodyCipher: 1234123412341234
 BodyCipherIV: 0000000000000000
+BodyCipherWhiteList:   
 # exposed外网暴露模式，校验用户token
 # backend后端模式，校验ip
 DeployMode: "backend"

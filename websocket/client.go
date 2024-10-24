@@ -71,7 +71,8 @@ func (w *WsClient) WriteMessage(msg string) error {
 	defer w.locker.Unlock()
 	encryptMsg := msg
 	if w.server.crypto != nil {
-		encryptMessage, errEncrypt := w.server.crypto.Encrypt([]byte(msg))
+		uri := w.server.conf.Uri
+		encryptMessage, errEncrypt := w.server.crypto.EncryptUriBody(uri, []byte(msg))
 		if errEncrypt != nil {
 			return errEncrypt
 		}

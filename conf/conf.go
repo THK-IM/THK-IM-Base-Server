@@ -129,26 +129,27 @@ type (
 	}
 
 	Config struct {
-		Name          string         `yaml:"Name"`
-		Cipher        string         `yaml:"Cipher"`
-		BodyCipher    string         `yaml:"BodyCipher"`
-		BodyCipherIV  string         `yaml:"BodyCipherIV"`
-		Host          string         `yaml:"Host"`
-		Port          string         `yaml:"Port"`
-		Mode          string         `yaml:"Mode"`
-		DeployMode    string         `yaml:"DeployMode"`
-		IpWhiteList   string         `yaml:"IpWhiteList"`
-		IM            *IM            `yaml:"IM"`
-		WebSocket     *WebSocket     `yaml:"WebSocket"`
-		Logger        *Logger        `yaml:"Logger"`
-		Sdks          []Sdk          `yaml:"Sdks"`
-		Node          *Node          `yaml:"Node"`
-		ObjectStorage *ObjectStorage `yaml:"ObjectStorage"`
-		MysqlSource   *MysqlSource   `yaml:"MysqlSource"`
-		RedisSource   *RedisSource   `yaml:"RedisSource"`
-		Models        []Model        `yaml:"Models"`
-		Metric        *Metric        `yaml:"Metric"`
-		MsgQueue      MsgQueue       `yaml:"MsgQueue"`
+		Name                string         `yaml:"Name"`
+		Cipher              string         `yaml:"Cipher"`
+		BodyCipher          string         `yaml:"BodyCipher"`
+		BodyCipherIV        string         `yaml:"BodyCipherIV"`
+		BodyCipherWhiteList string         `yaml:"BodyCipherWhiteList"`
+		Host                string         `yaml:"Host"`
+		Port                string         `yaml:"Port"`
+		Mode                string         `yaml:"Mode"`
+		DeployMode          string         `yaml:"DeployMode"`
+		IpWhiteList         string         `yaml:"IpWhiteList"`
+		IM                  *IM            `yaml:"IM"`
+		WebSocket           *WebSocket     `yaml:"WebSocket"`
+		Logger              *Logger        `yaml:"Logger"`
+		Sdks                []Sdk          `yaml:"Sdks"`
+		Node                *Node          `yaml:"Node"`
+		ObjectStorage       *ObjectStorage `yaml:"ObjectStorage"`
+		MysqlSource         *MysqlSource   `yaml:"MysqlSource"`
+		RedisSource         *RedisSource   `yaml:"RedisSource"`
+		Models              []Model        `yaml:"Models"`
+		Metric              *Metric        `yaml:"Metric"`
+		MsgQueue            MsgQueue       `yaml:"MsgQueue"`
 	}
 )
 

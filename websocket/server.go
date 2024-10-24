@@ -179,7 +179,8 @@ func (server *WsServer) SendMessageToUsers(uIds []int64, msg string) (err error)
 func (server *WsServer) OnClientMsg(client Client, msg string) {
 	decryptMsg := msg
 	if server.crypto != nil {
-		decryptData, errDecrypt := server.crypto.Decrypt(msg)
+		uri := server.conf.Uri
+		decryptData, errDecrypt := server.crypto.DecryptUriBody(uri, msg)
 		if errDecrypt != nil {
 			server.logger.WithFields(logrus.Fields(client.Claims())).Errorf("client: %v, err, %s", client.Info(), errDecrypt)
 			return
