@@ -8,8 +8,8 @@ const (
 
 type (
 	Element struct {
-		Id    int64 `json:"id"`
-		Score int64 `json:"score"`
+		Id    interface{} `json:"id"`
+		Score float64     `json:"score"`
 	}
 
 	Strategy struct {
@@ -20,6 +20,7 @@ type (
 	MatchPool interface {
 		Add(elements ...*Element) error
 		Remove(elements ...*Element) error
+		MemberCountByRange(score1, score2 float64) (int64, error)
 		MemberCount() (int64, error)
 		FetchMembers(uId int64, strategies []*Strategy) ([]*Element, error)
 	}
