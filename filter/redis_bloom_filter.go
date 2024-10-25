@@ -152,6 +152,10 @@ type RedisFilterFactory struct {
 	logger *logrus.Entry
 }
 
+func (r RedisFilterFactory) NewBitFilter(maxBit uint32) Bitmap {
+	return NewRedisBitmap(r.client, r.logger, maxBit)
+}
+
 func (r RedisFilterFactory) calculateBitSize(n uint32, p float64) int {
 	return int(-float64(n) * math.Log(p) / (math.Pow(math.Log(2), 2)))
 }
