@@ -153,7 +153,13 @@ type RedisFilterFactory struct {
 }
 
 func (r RedisFilterFactory) NewBitFilter(maxBit uint32) Bitmap {
-	return NewRedisBitmap(r.client, r.logger, maxBit)
+	return NewRedisBitmap(
+		r.client,
+		r.logger.WithFields(
+			logrus.Fields{"BitFilter": maxBit},
+		),
+		maxBit,
+	)
 }
 
 func (r RedisFilterFactory) calculateBitSize(n uint32, p float64) int {
