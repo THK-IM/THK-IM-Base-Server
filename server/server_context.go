@@ -194,7 +194,7 @@ func (app *Context) Init(config *conf.Config) {
 
 	if redisCache != nil {
 		app.lockerFactory = locker.NewRedisLockerFactory(redisCache, logger)
-		app.filterFactory = filter.NewFactory(redisCache, logger)
+		app.filterFactory = filter.NewRedisFactory(redisCache, logger)
 	}
 
 	if config.ObjectStorage != nil {

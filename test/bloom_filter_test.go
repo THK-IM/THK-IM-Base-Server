@@ -27,7 +27,7 @@ func TestBloomFilter(t *testing.T) {
 	rdb := redis.NewClient(opt)
 	loggerEntry := logrus.New().WithFields(logrus.Fields{})
 
-	factory := filter.NewFactory(rdb, loggerEntry)
+	factory := filter.NewRedisFactory(rdb, loggerEntry)
 	//params := filter.DefaultBloomFilterParams("bl", time.Hour)
 	params := filter.NewBloomFilterParams("bl", time.Hour, math.MaxUint32/2, 0.1, []uint32{31, 35, 37})
 	bloomFilter := factory.NewBloomFilter(params)
