@@ -10,6 +10,7 @@ import (
 	"github.com/thk-im/thk-im-base-server/conf"
 	"github.com/thk-im/thk-im-base-server/crypto"
 	"github.com/thk-im/thk-im-base-server/dto"
+	"github.com/thk-im/thk-im-base-server/filter"
 	"github.com/thk-im/thk-im-base-server/i18n"
 	"github.com/thk-im/thk-im-base-server/loader"
 	"github.com/thk-im/thk-im-base-server/locker"
@@ -37,6 +38,7 @@ type Context struct {
 	logger          *logrus.Entry
 	redisCache      *redis.Client
 	lockerFactory   locker.Factory
+	filterFactory   filter.Factory
 	database        *gorm.DB
 	snowflakeNode   *snowflake.Node
 	httpEngine      *gin.Engine
@@ -95,6 +97,10 @@ func (app *Context) Logger() *logrus.Entry {
 
 func (app *Context) NewLocker(key string, waitMs int, timeoutMs int) locker.Locker {
 	return app.lockerFactory.NewLocker(key, waitMs, timeoutMs)
+}
+
+func (app *Context) BloomFilter(param *filter.BloomFilterParams) filter.BloomFilter {
+	return app.filterFactory.NewBloomFilter(param)
 }
 
 func (app *Context) MetricService() *metric.Service {
@@ -184,6 +190,7 @@ func (app *Context) Init(config *conf.Config) {
 
 	if redisCache != nil {
 		app.lockerFactory = locker.NewRedisLockerFactory(redisCache, logger)
+		app.filterFactory = filter.NewFactory(redisCache, logger)
 	}
 
 	if config.ObjectStorage != nil {
