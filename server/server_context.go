@@ -99,6 +99,10 @@ func (app *Context) NewLocker(key string, waitMs int, timeoutMs int) locker.Lock
 	return app.lockerFactory.NewLocker(key, waitMs, timeoutMs)
 }
 
+func (app *Context) BitFilter(maxBit uint32) filter.BitFilter {
+	return app.filterFactory.NewBitFilter(maxBit)
+}
+
 func (app *Context) BloomFilter(param *filter.BloomFilterParams) filter.BloomFilter {
 	return app.filterFactory.NewBloomFilter(param)
 }

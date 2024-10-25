@@ -56,5 +56,5 @@ func NewBloomFilterParams(key string, expired time.Duration, n uint32, p float64
 
 type Factory interface {
 	NewBloomFilter(params *BloomFilterParams) BloomFilter
-	NewBitFilter(maxBit uint32) Bitmap
+	NewBitFilter(maxBit uint32) BitFilter
 }

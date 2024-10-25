@@ -10,7 +10,7 @@ import (
 )
 
 type RedisBloomFilter struct {
-	bitmap  Bitmap
+	bitmap  BitFilter
 	key     string
 	expired time.Duration
 	seeds   []uint32
@@ -152,8 +152,8 @@ type RedisFilterFactory struct {
 	logger *logrus.Entry
 }
 
-func (r RedisFilterFactory) NewBitFilter(maxBit uint32) Bitmap {
-	return NewRedisBitmap(
+func (r RedisFilterFactory) NewBitFilter(maxBit uint32) BitFilter {
+	return NewRedisBitFilter(
 		r.client,
 		r.logger.WithFields(
 			logrus.Fields{"BitFilter": maxBit},
@@ -175,7 +175,7 @@ func (r RedisFilterFactory) NewBloomFilter(params *BloomFilterParams) BloomFilte
 		bitSize = math.MaxUint32
 	}
 	m := uint32(bitSize)
-	bitmap := NewRedisBitmap(
+	bitmap := NewRedisBitFilter(
 		r.client,
 		r.logger.WithFields(
 			logrus.Fields{"BloomFilter": params.key},

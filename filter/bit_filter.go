@@ -8,8 +8,8 @@ import (
 	"time"
 )
 
-// Bitmap 最多存储uint32类型Max值4294967295个元素
-type Bitmap interface {
+// BitFilter 最多存储uint32类型Max值4294967295个元素
+type BitFilter interface {
 	Init(key string, ex time.Duration) error
 	Clear(key string, ex time.Duration) error
 	AddPos(key string, ex time.Duration, pos ...uint32) error
@@ -19,18 +19,18 @@ type Bitmap interface {
 	Delete(key string) error
 }
 
-type RedisBitmap struct {
+type RedisBitFilter struct {
 	client *redis.Client
 	logger *logrus.Entry
 	maxBit uint32
 }
 
-func (r RedisBitmap) Init(key string, ex time.Duration) error {
+func (r RedisBitFilter) Init(key string, ex time.Duration) error {
 	_, err := r.client.SetNX(context.Background(), key, "", ex).Result()
 	return err
 }
 
-func (r RedisBitmap) AddPos(key string, ex time.Duration, pos ...uint32) error {
+func (r RedisBitFilter) AddPos(key string, ex time.Duration, pos ...uint32) error {
 	args := make([]interface{}, 0)
 	args = append(args, "OVERFLOW")
 	args = append(args, "FAIL")
@@ -48,12 +48,12 @@ func (r RedisBitmap) AddPos(key string, ex time.Duration, pos ...uint32) error {
 	return err
 }
 
-func (r RedisBitmap) Clear(key string, ex time.Duration) error {
+func (r RedisBitFilter) Clear(key string, ex time.Duration) error {
 	_, err := r.client.Set(context.Background(), key, "", ex).Result()
 	return err
 }
 
-func (r RedisBitmap) Contains(key string, pos ...uint32) ([]bool, error) {
+func (r RedisBitFilter) Contains(key string, pos ...uint32) ([]bool, error) {
 	args := make([]interface{}, 0)
 	args = append(args, "OVERFLOW")
 	args = append(args, "FAIL")
@@ -77,7 +77,7 @@ func (r RedisBitmap) Contains(key string, pos ...uint32) ([]bool, error) {
 	return nil, err
 }
 
-func (r RedisBitmap) AllPos(key string) ([]uint32, error) {
+func (r RedisBitFilter) AllPos(key string) ([]uint32, error) {
 	res, err := r.client.Get(context.Background(), key).Result()
 	if err != nil {
 		return nil, err
@@ -95,7 +95,7 @@ func (r RedisBitmap) AllPos(key string) ([]uint32, error) {
 	return poss, nil
 }
 
-func (r RedisBitmap) Count(key string) (uint32, error) {
+func (r RedisBitFilter) Count(key string) (uint32, error) {
 	bitCount := &redis.BitCount{
 		Start: 0,
 		End:   -1,
@@ -108,12 +108,12 @@ func (r RedisBitmap) Count(key string) (uint32, error) {
 	return 0, err
 }
 
-func (r RedisBitmap) Delete(key string) error {
+func (r RedisBitFilter) Delete(key string) error {
 	_, err := r.client.Del(context.Background(), key).Result()
 	return err
 }
 
-func NewRedisBitmap(client *redis.Client, logger *logrus.Entry, maxBit uint32) Bitmap {
-	redisBitmapFilter := &RedisBitmap{client: client, logger: logger, maxBit: maxBit}
+func NewRedisBitFilter(client *redis.Client, logger *logrus.Entry, maxBit uint32) BitFilter {
+	redisBitmapFilter := &RedisBitFilter{client: client, logger: logger, maxBit: maxBit}
 	return redisBitmapFilter
 }

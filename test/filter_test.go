@@ -27,7 +27,7 @@ func TestFilter(t *testing.T) {
 	rdb := redis.NewClient(opt)
 	loggerEntry := logrus.New().WithFields(logrus.Fields{})
 
-	fl := filter.NewRedisBitmap(rdb, loggerEntry, 1024)
+	fl := filter.NewRedisBitFilter(rdb, loggerEntry, 1024)
 	poss := make([]uint32, 0)
 	for i := 0; i < 100; i++ {
 		if i%2 == 0 {
