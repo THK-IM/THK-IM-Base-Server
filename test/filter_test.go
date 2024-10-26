@@ -5,7 +5,6 @@ import (
 	"github.com/redis/go-redis/v9"
 	"github.com/sirupsen/logrus"
 	"github.com/thk-im/thk-im-base-server/filter"
-	"math/rand"
 	"testing"
 	"time"
 )
@@ -27,22 +26,24 @@ func TestFilter(t *testing.T) {
 	rdb := redis.NewClient(opt)
 	loggerEntry := logrus.New().WithFields(logrus.Fields{})
 
-	fl := filter.NewRedisBitFilter(rdb, loggerEntry, 1024)
+	fl := filter.NewRedisBitFilter(rdb, loggerEntry, 5*1024)
+	key := "filter_1"
+
 	poss := make([]uint32, 0)
-	for i := 0; i < 100; i++ {
-		if i%2 == 0 {
-			poss = append(poss, rand.Uint32()%100)
-		}
+	for i := 10; i < 20; i++ {
+		poss = append(poss, uint32(i))
 	}
-	for i := 0; i < len(poss); i++ {
-		for j := i; j < len(poss); j++ {
-			if poss[i] > poss[j] {
-				poss[i], poss[j] = poss[j], poss[i]
-			}
-		}
+	contains, ctErr := fl.Contains(key, poss...)
+	if ctErr != nil {
+		fmt.Println(ctErr)
+		t.Failed()
+		return
+	}
+
+	for i := 0; i < 5*1024; i++ {
+		poss = append(poss, uint32(i))
 	}
 	fmt.Println(time.Now().UnixMilli(), poss, len(poss))
-	key := "filter_0"
 	err = fl.Init(key, time.Hour)
 	err = fl.Clear(key, time.Hour)
 	err = fl.AddPos(key, time.Hour, poss...)
@@ -72,7 +73,7 @@ func TestFilter(t *testing.T) {
 	for i := 10; i < 20; i++ {
 		poss = append(poss, uint32(i))
 	}
-	contains, ctErr := fl.Contains(key, poss...)
+	contains, ctErr = fl.Contains(key, poss...)
 	if ctErr != nil {
 		fmt.Println(ctErr)
 		t.Failed()

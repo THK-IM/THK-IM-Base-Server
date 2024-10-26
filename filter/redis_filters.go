@@ -41,7 +41,7 @@ func (r RedisBitFilter) AddPos(key string, ex time.Duration, pos ...uint32) erro
 	for _, p := range pos {
 		args = append(args, "set")
 		args = append(args, "u1")
-		args = append(args, fmt.Sprintf("#%d", p/r.maxBit))
+		args = append(args, fmt.Sprintf("#%d", p%r.maxBit))
 		args = append(args, "1")
 	}
 	_, err := r.client.BitField(context.Background(), key, args...).Result()
@@ -64,7 +64,7 @@ func (r RedisBitFilter) Contains(key string, pos ...uint32) ([]bool, error) {
 	for _, p := range pos {
 		args = append(args, "get")
 		args = append(args, "u1")
-		args = append(args, fmt.Sprintf("#%d", p/r.maxBit))
+		args = append(args, fmt.Sprintf("#%d", p%r.maxBit))
 	}
 	res, err := r.client.BitField(context.Background(), key, args).Result()
 	if err == nil {

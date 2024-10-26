@@ -5,16 +5,18 @@ import (
 	"fmt"
 	"github.com/redis/go-redis/v9"
 	"github.com/sirupsen/logrus"
-	"math"
+	"github.com/thk-im/thk-im-base-server/filter"
+	"golang.org/x/exp/slices"
+	"strconv"
+	"time"
 )
 
 type (
 	RedisRecommendPool struct {
-		client          *redis.Client
-		logger          *logrus.Entry
-		key             string // 推荐池key
-		allowRepetition bool   // 允许重复
-		eliminateScore  int64  // 淘汰分数
+		key       string // 推荐池key
+		client    *redis.Client
+		logger    *logrus.Entry
+		bitFilter filter.BitFilter
 	}
 )
 
@@ -40,54 +42,170 @@ func (r RedisRecommendPool) Remove(elements ...*Element) error {
 	return err
 }
 
-func (r RedisRecommendPool) MemberCountByRange(score1, score2 float64) (int64, error) {
+func (r RedisRecommendPool) RemoveByScore(score float64) (int64, error) {
+	return r.client.ZRemRangeByScore(
+		context.Background(), r.key,
+		"-inf",
+		fmt.Sprintf("(%f", score),
+	).Result()
+}
+
+func (r RedisRecommendPool) ElementCountByRange(score1, score2 float64) (int64, error) {
 	return r.client.ZCount(
 		context.Background(), r.key,
 		fmt.Sprintf("%f", score1),
-		fmt.Sprintf("%f", score2),
+		fmt.Sprintf("(%f", score2),
 	).Result()
 }
 
-func (r RedisRecommendPool) MemberCount() (int64, error) {
-	return r.client.ZCount(
-		context.Background(), r.key,
-		fmt.Sprintf("%f", 0-math.MaxFloat64),
-		fmt.Sprintf("%f", math.MaxFloat64),
-	).Result()
+func (r RedisRecommendPool) ElementCount() (int64, error) {
+	return r.client.ZCard(context.Background(), r.key).Result()
 }
 
-func (r RedisRecommendPool) FetchMembers(uId int64, strategies []*Strategy) ([]*Element, error) {
-	elements := make([]*Element, 0)
+func (r RedisRecommendPool) FetchElements(uId int64, strategies []*Strategy) ([]Element, error) {
+	elements := make([]Element, 0)
 	for _, strategy := range strategies {
-		if subElements, errFetch := r.fetchMembersByStrategy(strategy); errFetch != nil {
-			return nil, errFetch
-		} else {
-			elements = append(elements, subElements...)
+		if strategy.Type == StrategyRandom {
+			remainCount := int64(strategy.Count)
+			for fetchTimes := 0; fetchTimes < strategy.RepeatRetryCount+1; fetchTimes++ {
+				subElements, errFetch := r.fetchMemberByRandom(5 * remainCount)
+				if errFetch != nil {
+					return nil, errFetch
+				}
+				if len(subElements) == 0 {
+					break
+				}
+				remainCount, errFetch = r.checkElements(&elements, subElements, uId, remainCount)
+				if errFetch != nil {
+					return nil, errFetch
+				}
+				if remainCount <= 0 {
+					break
+				}
+			}
+		} else if strategy.Type == StrategyScore {
+			offset := int64(0)
+			remainCount := int64(strategy.Count)
+			for fetchTimes := 0; fetchTimes < strategy.RepeatRetryCount+1; fetchTimes++ {
+				subElements, errFetch := r.fetchMembersByScore(5*remainCount, offset)
+				offset += 5 * remainCount
+				if errFetch != nil {
+					return nil, errFetch
+				}
+				if len(subElements) == 0 {
+					break
+				}
+				remainCount, errFetch = r.checkElements(&elements, subElements, uId, remainCount)
+				if errFetch != nil {
+					return nil, errFetch
+				}
+				if remainCount <= 0 {
+					break
+				}
+			}
 		}
 	}
 	return elements, nil
 }
 
-func (r RedisRecommendPool) fetchMembersByStrategy(strategy *Strategy) ([]*Element, error) {
-	elements := make([]*Element, 0)
-	if strategy == nil {
-		return elements, nil
+func (r RedisRecommendPool) checkElements(elements *[]Element, fetchElements []Element, uId, count int64) (int64, error) {
+	added := int64(0)
+	ids := make([]uint32, 0)
+	tmpElements := make([]Element, 0)
+	for _, element := range fetchElements {
+		if !slices.Contains(*elements, element) { // 去重
+			ids = append(ids, uint32(element.Id))
+			tmpElements = append(tmpElements, element)
+		}
 	}
-	if strategy.Type == StrategyRandom {
-		return nil, nil
-	} else if strategy.Type == StrategyScoreAsc {
-		return nil, nil
-	} else if strategy.Type == StrategyScoreDesc {
-		return nil, nil
+	userKey := r.userRecordKey(uId)
+	contains, err := r.bitFilter.Contains(userKey, ids...)
+	if err != nil {
+		return count, err
+	}
+	for index, c := range contains {
+		if c == false {
+			*elements = append(*elements, tmpElements[index])
+			added++
+			if added >= count {
+				break
+			}
+		}
+	}
+	return count - added, nil
+}
+
+func (r RedisRecommendPool) fetchMemberByRandom(count int64) ([]Element, error) {
+	elements := make([]Element, 0)
+	results, err := r.client.ZRandMemberWithScores(context.Background(), r.key, int(count)).Result()
+	if err != nil {
+		return elements, err
+	}
+	for _, result := range results {
+		id, errId := strconv.ParseInt(result.Member.(string), 10, 64)
+		if errId != nil {
+			return elements, errId
+		}
+		element := Element{
+			Id:    id,
+			Score: result.Score,
+		}
+		elements = append(elements, element)
 	}
 	return elements, nil
 }
 
-func NewRedisRecommendPool(client *redis.Client, logger *logrus.Entry, key, allowRepetition bool) RecommendPool {
+func (r RedisRecommendPool) fetchMembersByScore(count int64, offset int64) ([]Element, error) {
+	elements := make([]Element, 0)
+	opt := &redis.ZRangeBy{
+		Min:    "-inf",
+		Max:    "+inf",
+		Count:  count,
+		Offset: offset,
+	}
+	results, err := r.client.ZRangeByScoreWithScores(context.Background(), r.key, opt).Result()
+	if err != nil {
+		return elements, err
+	}
+	for _, result := range results {
+		id, errId := strconv.ParseInt(result.Member.(string), 10, 64)
+		if errId != nil {
+			return elements, errId
+		}
+		element := Element{
+			Id:    id,
+			Score: result.Score,
+		}
+		elements = append(elements, element)
+	}
+	return elements, nil
+}
+
+func (r RedisRecommendPool) userRecordKey(uId int64) string {
+	userKey := fmt.Sprintf("%s:%d", r.key, uId)
+	return userKey
+}
+
+func (r RedisRecommendPool) ClearUserRecord(uId int64) error {
+	userKey := r.userRecordKey(uId)
+	return r.bitFilter.Delete(userKey)
+}
+
+func (r RedisRecommendPool) AddUserRecord(uId int64, ex time.Duration, elementIds ...int64) error {
+	userKey := r.userRecordKey(uId)
+	poss := make([]uint32, len(elementIds))
+	for _, id := range elementIds {
+		poss = append(poss, uint32(id))
+	}
+	return r.bitFilter.AddPos(userKey, ex, poss...)
+}
+
+func NewRedisRecommendPool(client *redis.Client, logger *logrus.Entry, key string, maxRecordCount uint32) RecommendPool {
 	redisPool := &RedisRecommendPool{
-		client:          client,
-		logger:          logger.WithField("module", "redis-recommend-pool"),
-		allowRepetition: allowRepetition,
+		key:       key,
+		client:    client,
+		logger:    logger.WithField("module", "redis-recommend-pool"),
+		bitFilter: filter.NewRedisBitFilter(client, logger, maxRecordCount),
 	}
 	return redisPool
 }
