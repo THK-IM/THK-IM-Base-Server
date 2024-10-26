@@ -18,6 +18,7 @@ import (
 	"github.com/thk-im/thk-im-base-server/middleware"
 	"github.com/thk-im/thk-im-base-server/mq"
 	"github.com/thk-im/thk-im-base-server/object"
+	"github.com/thk-im/thk-im-base-server/pool"
 	"github.com/thk-im/thk-im-base-server/snowflake"
 	"github.com/thk-im/thk-im-base-server/websocket"
 	"golang.org/x/text/language"
@@ -39,6 +40,7 @@ type Context struct {
 	redisCache      *redis.Client
 	lockerFactory   locker.Factory
 	filterFactory   filter.Factory
+	poolFactory     pool.Factory
 	database        *gorm.DB
 	snowflakeNode   *snowflake.Node
 	httpEngine      *gin.Engine
@@ -105,6 +107,14 @@ func (app *Context) BitFilter(maxBit uint32) filter.BitFilter {
 
 func (app *Context) BloomFilter(param *filter.BloomFilterParams) filter.BloomFilter {
 	return app.filterFactory.NewBloomFilter(param)
+}
+
+func (app *Context) RecommendPool(key string, userMaxRecordCount uint32) pool.RecommendPool {
+	return app.poolFactory.NewRecommendPool(key, userMaxRecordCount)
+}
+
+func (app *Context) MatchPool(key string) pool.MatchPool {
+	return app.poolFactory.NewMatchPool(key)
 }
 
 func (app *Context) MetricService() *metric.Service {
@@ -195,6 +205,7 @@ func (app *Context) Init(config *conf.Config) {
 	if redisCache != nil {
 		app.lockerFactory = locker.NewRedisLockerFactory(redisCache, logger)
 		app.filterFactory = filter.NewRedisFactory(redisCache, logger)
+		app.poolFactory = pool.NewRedisPoolFactory(redisCache, logger)
 	}
 
 	if config.ObjectStorage != nil {

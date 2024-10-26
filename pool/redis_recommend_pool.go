@@ -62,7 +62,7 @@ func (r RedisRecommendPool) ElementCount() (int64, error) {
 	return r.client.ZCard(context.Background(), r.key).Result()
 }
 
-func (r RedisRecommendPool) FetchElements(uId int64, strategies []*Strategy) ([]Element, error) {
+func (r RedisRecommendPool) FetchElements(uId int64, strategies []*RecommendStrategy) ([]Element, error) {
 	elements := make([]Element, 0)
 	for _, strategy := range strategies {
 		if strategy.Type == StrategyRandom {

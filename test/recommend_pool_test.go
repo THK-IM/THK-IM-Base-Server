@@ -77,14 +77,14 @@ func TestRecommendPool(t *testing.T) {
 	}
 	fmt.Println(count)
 
-	st := make([]*pool.Strategy, 0)
-	st1 := &pool.Strategy{
+	st := make([]*pool.RecommendStrategy, 0)
+	st1 := &pool.RecommendStrategy{
 		Type:             pool.StrategyScore,
 		Count:            10,
 		RepeatRetryCount: 2,
 	}
 	st = append(st, st1)
-	st2 := &pool.Strategy{
+	st2 := &pool.RecommendStrategy{
 		Type:             pool.StrategyRandom,
 		Count:            10,
 		RepeatRetryCount: 1,

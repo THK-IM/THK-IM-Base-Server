@@ -6,8 +6,9 @@ import (
 )
 
 type Factory interface {
-
-	// NewMatchPool(key string) MatchPool
+	// NewMatchPool 新建匹配池
+	// @param key 池子key
+	NewMatchPool(key string) MatchPool
 
 	// NewRecommendPool 新建推荐池
 	// @param key 池子key
@@ -18,6 +19,10 @@ type Factory interface {
 type RedisPoolFactory struct {
 	client *redis.Client
 	logger *logrus.Entry
+}
+
+func (r RedisPoolFactory) NewMatchPool(key string) MatchPool {
+	return NewRedisMatchPool(r.client, r.logger, key)
 }
 
 func (r RedisPoolFactory) NewRecommendPool(key string, userMaxRecordCount uint32) RecommendPool {
