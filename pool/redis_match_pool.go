@@ -35,7 +35,7 @@ func (r RedisMatchPool) Count() (int64, error) {
 	return r.client.SCard(context.Background(), r.key).Result()
 }
 
-func (r RedisMatchPool) Match(uId string, maxMatchCount int, f MatchFunction) (matchedId *string, err error) {
+func (r RedisMatchPool) Match(uId string, retryTimes int, f MatchFunction) (matchedId *string, err error) {
 	putBack := false
 	passedIds := make([]string, 0)
 	times := 0
@@ -59,10 +59,10 @@ func (r RedisMatchPool) Match(uId string, maxMatchCount int, f MatchFunction) (m
 				return matchedId, errBack
 			}
 		}
-		times++
-		if times >= maxMatchCount {
+		if times >= retryTimes {
 			break
 		}
+		times++
 	}
 	return matchedId, err
 }
