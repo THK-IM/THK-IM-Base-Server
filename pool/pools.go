@@ -27,7 +27,7 @@ type (
 		Remove(ids ...string) (int64, error)
 		Contain(id string) (bool, error)
 		Count() (int64, error)
-		Match(uId string, f MatchFunction) (matchedId *string, err error)
+		Match(uId string, maxMatchCount int, f MatchFunction) (matchedId *string, err error)
 	}
 
 	RecommendPool interface {
