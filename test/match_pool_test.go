@@ -83,7 +83,7 @@ func TestMatchPool(t *testing.T) {
 	fmt.Println(count)
 
 	var id *string = nil
-	id, err = matchPool.Match("7", func(id string, candidateId string) (matchedId *string, putBlack bool, err error) {
+	id, err = matchPool.Match("7", 10, func(id string, candidateId string) (matchedId *string, putBlack bool, err error) {
 		if candidateId == "8" {
 			return &candidateId, false, nil
 		} else {
