@@ -27,7 +27,19 @@ func TestMatchPool(t *testing.T) {
 	loggerEntry := logrus.New().WithFields(logrus.Fields{})
 
 	factory := pool.NewRedisPoolFactory(rdb, loggerEntry)
-	matchPool := factory.NewMatchPool("ma")
+	matchPool := factory.NewMatchPool("ma111")
+
+	forId, errFetch := matchPool.FetchOne()
+	if errFetch != nil {
+		fmt.Println(errFetch)
+		t.Failed()
+		return
+	}
+	if forId != nil {
+		fmt.Println(*forId)
+	} else {
+		fmt.Println("Pool is nil")
+	}
 	_, err = matchPool.Add("1", "2", "3")
 	if err != nil {
 		fmt.Println(err)

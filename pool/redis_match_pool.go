@@ -35,7 +35,17 @@ func (r RedisMatchPool) Count() (int64, error) {
 	return r.client.SCard(context.Background(), r.key).Result()
 }
 
-func (r RedisMatchPool) Match(uId string, retryTimes int, f MatchFunction) (matchedId *string, err error) {
+func (r RedisMatchPool) FetchOne() (*string, error) {
+	id, err := r.client.SPop(context.Background(), r.key).Result()
+	if err != nil {
+		if errors.Is(err, redis.Nil) {
+			return nil, nil
+		}
+	}
+	return &id, err
+}
+
+func (r RedisMatchPool) Match(forId string, retryTimes int, f MatchFunction) (matchedId *string, err error) {
 	putBack := false
 	passedIds := make([]string, 0)
 	times := 0
@@ -48,7 +58,7 @@ func (r RedisMatchPool) Match(uId string, retryTimes int, f MatchFunction) (matc
 				return nil, errPop
 			}
 		}
-		matchedId, putBack, err = f(uId, id)
+		matchedId, putBack, err = f(forId, id)
 		if err != nil {
 			return nil, err
 		}

@@ -27,7 +27,14 @@ type (
 		Remove(ids ...string) (int64, error)
 		Contain(id string) (bool, error)
 		Count() (int64, error)
-		Match(uId string, retryTimes int, f MatchFunction) (matchedId *string, err error)
+		// Match
+		// Params:forId 匹配人Id， retryTimes 重试次数，f 匹配函数;
+		// Return matchedId 被匹配Id，err 错误出现
+		// 如最终matchedId为nil，则未匹配到，可将forId放入池子，forId成为被匹配人，等待被匹配
+		Match(forId string, retryTimes int, f MatchFunction) (matchedId *string, err error)
+		// FetchOne
+		// 如使用消息队列进行异步匹配时，从池子中取出一个id，调用Match函数传入id(forId) 进行匹配
+		FetchOne() (*string, error)
 	}
 
 	RecommendPool interface {
