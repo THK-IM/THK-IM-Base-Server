@@ -67,7 +67,7 @@ func (r RedisRecommendPool) FetchElements(uId int64, strategies []*RecommendStra
 	for _, strategy := range strategies {
 		if strategy.Type == StrategyRandom {
 			remainCount := int64(strategy.Count)
-			for fetchTimes := 0; fetchTimes < strategy.RepeatRetryCount+1; fetchTimes++ {
+			for fetchTimes := 0; fetchTimes < strategy.RepeatRetryTimes+1; fetchTimes++ {
 				subElements, errFetch := r.fetchMemberByRandom(5 * remainCount)
 				if errFetch != nil {
 					return nil, errFetch
@@ -86,7 +86,7 @@ func (r RedisRecommendPool) FetchElements(uId int64, strategies []*RecommendStra
 		} else if strategy.Type == StrategyScore {
 			offset := int64(0)
 			remainCount := int64(strategy.Count)
-			for fetchTimes := 0; fetchTimes < strategy.RepeatRetryCount+1; fetchTimes++ {
+			for fetchTimes := 0; fetchTimes < strategy.RepeatRetryTimes+1; fetchTimes++ {
 				subElements, errFetch := r.fetchMembersByScore(5*remainCount, offset)
 				offset += 5 * remainCount
 				if errFetch != nil {

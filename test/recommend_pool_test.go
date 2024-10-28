@@ -81,13 +81,13 @@ func TestRecommendPool(t *testing.T) {
 	st1 := &pool.RecommendStrategy{
 		Type:             pool.StrategyScore,
 		Count:            10,
-		RepeatRetryCount: 2,
+		RepeatRetryTimes: 2,
 	}
 	st = append(st, st1)
 	st2 := &pool.RecommendStrategy{
 		Type:             pool.StrategyRandom,
 		Count:            10,
-		RepeatRetryCount: 1,
+		RepeatRetryTimes: 1,
 	}
 	st = append(st, st2)
 	uId := int64(1)

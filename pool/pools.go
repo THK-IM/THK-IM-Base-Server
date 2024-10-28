@@ -16,7 +16,7 @@ type (
 	RecommendStrategy struct {
 		Type             string `json:"type"`
 		Count            int    `json:"count"`
-		RepeatRetryCount int    `json:"repeat_retry_count"`
+		RepeatRetryTimes int    `json:"repeat_retry_times"` // 发现重复推荐时重试次数 传0不重试
 	}
 
 	MatchFunction func(id string, candidateId string) (matchedId *string, putBlack bool, err error)
