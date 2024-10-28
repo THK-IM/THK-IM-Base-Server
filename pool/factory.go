@@ -12,7 +12,7 @@ type Factory interface {
 
 	// NewRecommendPool 新建推荐池
 	// @param key 池子key
-	// @param userMaxRecordCount 用户推荐记录最大保存数量 如设置 8*1024 每个用户占用2KB
+	// @param userMaxRecordCount 用户推荐记录最大保存数量 如:设置8*1024则每个用户占用2KB
 	NewRecommendPool(key string, userMaxRecordCount uint32) RecommendPool
 }
 

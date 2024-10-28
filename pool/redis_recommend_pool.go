@@ -200,6 +200,11 @@ func (r RedisRecommendPool) AddUserRecord(uId int64, ex time.Duration, elementId
 	return r.bitFilter.AddPos(userKey, ex, poss...)
 }
 
+func (r RedisRecommendPool) UserRecordCount(uId int64) (uint32, error) {
+	userKey := r.userRecordKey(uId)
+	return r.bitFilter.Count(userKey)
+}
+
 func NewRedisRecommendPool(client *redis.Client, logger *logrus.Entry, key string, maxRecordCount uint32) RecommendPool {
 	redisPool := &RedisRecommendPool{
 		key:       key,

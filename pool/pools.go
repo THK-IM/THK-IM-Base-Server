@@ -47,5 +47,7 @@ type (
 		AddUserRecord(uId int64, ex time.Duration, elementId ...int64) error
 		// ClearUserRecord 清除用户推荐记录
 		ClearUserRecord(uId int64) error
+		// UserRecordCount 用户推荐记录数量
+		UserRecordCount(uId int64) (uint32, error)
 	}
 )

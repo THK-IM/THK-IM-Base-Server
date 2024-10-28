@@ -23,8 +23,9 @@ type (
 		Delete() error
 		AddOne(item interface{}) error
 		Add(items []interface{}) error
-		// CheckOneExisted 返回true 表示可能存在，false表示一定不存在
+		// CheckOneExisted 返回 true表示可能存在，false表示一定不存在
 		CheckOneExisted(items interface{}) (bool, error)
+		// CheckExisted 返回[], true表示可能存在，false表示一定不存在
 		CheckExisted(items []interface{}) ([]bool, error)
 		// FalseRate 计算插入n个元素后的误差率
 		FalseRate(n uint32) float64
