@@ -3,6 +3,8 @@ package event
 import "encoding/json"
 
 const (
+	// PushEventClaims 服务端事件Claims
+	PushEventClaims = "push_claims"
 	// PushEventTypeKey 推送事件类型Key
 	PushEventTypeKey = "push_type_key"
 	// PushEventReceiversKey 推送事件子类型Key
