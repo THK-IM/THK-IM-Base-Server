@@ -1,6 +1,9 @@
 package dto
 
-import "github.com/sirupsen/logrus"
+import (
+	"encoding/json"
+	"github.com/sirupsen/logrus"
+)
 
 type ThkClaims logrus.Fields
 
@@ -70,4 +73,18 @@ func (m ThkClaims) getValue(key string) string {
 	} else {
 		return ""
 	}
+}
+
+func (m ThkClaims) ToJsonString() string {
+	b, err := json.Marshal(m)
+	if err != nil {
+		return ""
+	}
+	return string(b)
+}
+
+func ThkClaimsFromJsonString(js string) (ThkClaims, error) {
+	claims := ThkClaims{}
+	err := json.Unmarshal([]byte(js), &claims)
+	return claims, err
 }
