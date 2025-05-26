@@ -5,6 +5,8 @@ import (
 )
 
 const (
+	// ServerEventClaims 服务端事件Claims
+	ServerEventClaims = "ServerEventClaims"
 	// ServerEventTypeKey 服务端事件类型Key
 	ServerEventTypeKey = "ServerEventType"
 	// ServerEventBodyKey 服务端事件Body Key
