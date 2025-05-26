@@ -62,6 +62,7 @@ type (
 	}
 
 	ObjectStorage struct {
+		Engine   string `yaml:"Engine"`
 		Endpoint string `yaml:"Endpoint"`
 		Bucket   string `yaml:"Bucket"`
 		AK       string `yaml:"AK"`

@@ -1,27 +1,22 @@
 package main
 
-import (
-	"fmt"
-	"github.com/thk-im/thk-im-base-server/i18n"
-)
-
 func main() {
-	localize := i18n.NewLocalize("etc/localize")
-
-	languages := localize.GetSupportedLanguages()
-	fmt.Println(languages)
-
-	text := localize.Get("text", "en")
-	fmt.Println(text)
-
-	text = localize.Get("text", "zh")
-	fmt.Println(text)
-
-	text = localize.Get("text", "zh-Hans")
-	fmt.Println(text)
-
-	text = localize.Get("text", "ja")
-	fmt.Println(text)
+	//localize := i18n.NewLocalize("etc/localize")
+	//
+	//languages := localize.GetSupportedLanguages()
+	//fmt.Println(languages)
+	//
+	//text := localize.Get("text", "en")
+	//fmt.Println(text)
+	//
+	//text = localize.Get("text", "zh")
+	//fmt.Println(text)
+	//
+	//text = localize.Get("text", "zh-Hans")
+	//fmt.Println(text)
+	//
+	//text = localize.Get("text", "ja")
+	//fmt.Println(text)
 
 	// config := &conf.Config{}
 	// err := conf.Load("etc/server.yaml", config)

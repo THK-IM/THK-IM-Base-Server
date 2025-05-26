@@ -209,7 +209,11 @@ func (app *Context) Init(config *conf.Config) {
 	}
 
 	if config.ObjectStorage != nil {
-		app.objectStorage = object.NewMinioStorage(logger, config.ObjectStorage)
+		if config.ObjectStorage.Engine == "Oss" {
+			app.objectStorage = object.NewOssStorage(logger, config.ObjectStorage)
+		} else {
+			app.objectStorage = object.NewMinioStorage(logger, config.ObjectStorage)
+		}
 	}
 	if config.WebSocket != nil {
 		app.websocketServer = websocket.NewServer(config.WebSocket, logger, httpEngine, snowflakeNode, cipher, config.Mode)

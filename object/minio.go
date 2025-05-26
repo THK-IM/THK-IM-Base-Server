@@ -8,6 +8,7 @@ import (
 	"github.com/minio/minio-go/v7/pkg/credentials"
 	"github.com/sirupsen/logrus"
 	"github.com/thk-im/thk-im-base-server/conf"
+	"net/http"
 	"os"
 	"strings"
 	"time"
@@ -68,7 +69,7 @@ func (m MinioStorage) GetUploadParams(key string) (string, string, map[string]st
 	if errSign != nil {
 		return "", "", nil, errSign
 	}
-	params := make(map[string]string, 0)
+	params := make(map[string]string)
 	for k, v := range formData {
 		params[k] = v
 	}
@@ -83,6 +84,36 @@ func (m MinioStorage) GetDownloadUrl(key string) (*string, error) {
 	}
 	absolutPath := preSignedURL.String()
 	return &absolutPath, nil
+}
+
+func (m MinioStorage) DeleteObjectsByKeys(keys []string) error {
+	objectCh := make(chan minio.ObjectInfo)
+	defer close(objectCh)
+	go func() {
+		for _, key := range keys {
+			objectCh <- minio.ObjectInfo{Key: key}
+		}
+	}()
+	resultCh := m.client.RemoveObjects(context.Background(), m.conf.Bucket, objectCh, minio.RemoveObjectsOptions{})
+
+	for result := range resultCh {
+		return result.Err
+	}
+	return nil
+}
+
+func (m MinioStorage) KeyExists(key string) (bool, error) {
+	_, err := m.client.StatObject(context.Background(), m.conf.Bucket, key, minio.StatObjectOptions{})
+	if err != nil {
+		errResp := minio.ToErrorResponse(err)
+		if errResp.StatusCode == http.StatusNotFound {
+			return false, nil
+		} else {
+			return false, err
+		}
+	} else {
+		return true, nil
+	}
 }
 
 func NewMinioStorage(logger *logrus.Entry, conf *conf.ObjectStorage) Storage {
