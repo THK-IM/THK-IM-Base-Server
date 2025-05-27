@@ -54,7 +54,7 @@ func (o OssStorage) GetUploadParams(key string) (string, string, map[string]stri
 			map[string]string{"x-oss-credential": fmt.Sprintf("%v/%v/%v/%v/aliyun_v4_request",
 				cred.GetAccessKeyID(), date, o.conf.Region, product)}, // 凭证
 			map[string]string{"x-oss-date": utcTime.Format("20060102T150405Z")},
-			[]any{"eq", "$success_action_status", "200"},
+			//[]any{"eq", "$success_action_status", "200"},
 		},
 	}
 
