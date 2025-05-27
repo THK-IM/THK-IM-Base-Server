@@ -46,7 +46,7 @@ func TestOssObject(t *testing.T) {
 		SK:       "dfsfsfs",
 		Region:   "cn-beijing",
 	}
-	key := "zwtest/sample-111s.mp3"
+	key := "zwtest/image1.png"
 	storage := object.NewOssStorage(loggerEntry, storageConf)
 
 	url, method, formData, errSign := storage.GetUploadParams(key)
@@ -58,7 +58,7 @@ func TestOssObject(t *testing.T) {
 	for k, v := range formData {
 		fmt.Printf("-F %s=%s ", k, v)
 	}
-	fmt.Printf("-F file=@./etc/sample-111s.mp3")
+	fmt.Printf("-F file=@./etc/image1.png")
 	fmt.Printf(" %s\n", url)
 
 	existed, err := storage.KeyExists(key)
