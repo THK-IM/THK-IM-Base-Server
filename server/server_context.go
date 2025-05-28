@@ -209,10 +209,12 @@ func (app *Context) Init(config *conf.Config) {
 	}
 
 	if config.ObjectStorage != nil {
-		if config.ObjectStorage.Engine == "Oss" {
+		if config.ObjectStorage.Engine == "oss" {
 			app.objectStorage = object.NewOssStorage(logger, config.ObjectStorage)
-		} else {
+		} else if config.ObjectStorage.Engine == "minio" {
 			app.objectStorage = object.NewMinioStorage(logger, config.ObjectStorage)
+		} else {
+			panic("ObjectStorage Engine not supported")
 		}
 	}
 	if config.WebSocket != nil {
