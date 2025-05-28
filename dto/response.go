@@ -21,6 +21,28 @@ func (eR *ErrorResponse) Localize(language string) {
 	}
 }
 
+func ResponseStatusCode(ctx *gin.Context, httpStatusCode int, err error) {
+	if err != nil {
+		var e *errorx.ErrorX
+		if errors.As(err, &e) {
+			rsp := &ErrorResponse{
+				Code:    e.Code,
+				Message: e.Message,
+			}
+			ctx.JSON(httpStatusCode, rsp)
+		} else {
+			rsp := &ErrorResponse{
+				Code:    httpStatusCode,
+				Message: err.Error(),
+			}
+			ctx.JSON(httpStatusCode, rsp)
+		}
+	} else {
+		ctx.Status(httpStatusCode)
+	}
+
+}
+
 func ResponseForbidden(ctx *gin.Context) {
 	rsp := &ErrorResponse{
 		Code:    http.StatusForbidden,
