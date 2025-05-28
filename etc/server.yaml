@@ -58,7 +58,8 @@ Models:
   - Name: "user_online_status"
     Shards: 1
 ObjectStorage:
-  Engine: "Minio"
+  Name: "minio"
+  Engine: "minio"
   Endpoint: "http://minio.thkim.com"
   Bucket: "thk"
   AK: "7pwGcuomjng4cRKWYPNz"
