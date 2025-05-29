@@ -116,6 +116,20 @@ func (m MinioStorage) KeyExists(key string) (bool, error) {
 	}
 }
 
+func (m MinioStorage) KeyFileSize(key string) (int64, error) {
+	info, err := m.client.StatObject(context.Background(), m.conf.Bucket, key, minio.StatObjectOptions{})
+	if err != nil {
+		errResp := minio.ToErrorResponse(err)
+		if errResp.StatusCode == http.StatusNotFound {
+			return 0, nil
+		} else {
+			return 0, err
+		}
+	} else {
+		return info.Size, nil
+	}
+}
+
 func NewMinioStorage(logger *logrus.Entry, conf *conf.ObjectStorage) Storage {
 	secure := false
 	endpoint := conf.Endpoint

@@ -14,6 +14,7 @@ import (
 	"io"
 	"log"
 	"os"
+	"strconv"
 	"time"
 )
 
@@ -120,6 +121,19 @@ func (o OssStorage) DeleteObjectsByKeys(keys []string) error {
 func (o OssStorage) KeyExists(key string) (bool, error) {
 	isExist, err := o.bucket.IsObjectExist(key)
 	return isExist, err
+}
+
+func (o OssStorage) KeyFileSize(key string) (int64, error) {
+	header, err := o.bucket.GetObjectMeta(key)
+	if err != nil {
+		return 0, err
+	}
+	sizeStr := header.Get("Content-Length")
+	size, errSize := strconv.ParseInt(sizeStr, 10, 64)
+	if errSize != nil {
+		return 0, errSize
+	}
+	return size, nil
 }
 
 func NewOssStorage(logger *logrus.Entry, conf *conf.ObjectStorage) Storage {

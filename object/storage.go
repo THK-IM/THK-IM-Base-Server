@@ -11,6 +11,7 @@ type Storage interface {
 	GetDownloadUrl(key string) (*string, error)
 	DeleteObjectsByKeys(keys []string) error
 	KeyExists(key string) (bool, error)
+	KeyFileSize(key string) (int64, error)
 }
 
 func NewStorage(logger *logrus.Entry, conf *conf.ObjectStorage) Storage {
