@@ -68,6 +68,9 @@ func Claims(crypto crypto.Crypto) gin.HandlerFunc {
 		platform := context.Request.Header.Get(dto.Platform)
 		claims.PutValue(dto.Platform, platform)
 
+		channel := context.Request.Header.Get(dto.Channel)
+		claims.PutValue(dto.Channel, channel)
+
 		version := context.Request.Header.Get(dto.Version)
 		claims.PutValue(dto.Version, version)
 

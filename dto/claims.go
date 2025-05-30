@@ -16,6 +16,7 @@ const (
 	Device       = "Device"
 	TimeZone     = "TimeZone"
 	Platform     = "Platform" // web/ios/android/centos/windows/apple
+	Channel      = "Channel"  // channel
 	Version      = "Version"
 	OriginIP     = "Origin-IP"
 
@@ -52,6 +53,10 @@ func (m ThkClaims) GetTimeZone() string {
 
 func (m ThkClaims) GetPlatform() string {
 	return m.getValue(Platform)
+}
+
+func (m ThkClaims) GetChannel() string {
+	return m.getValue(Channel)
 }
 
 func (m ThkClaims) GetVersion() string {
