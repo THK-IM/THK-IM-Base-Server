@@ -16,9 +16,9 @@ type Storage interface {
 
 func NewStorage(logger *logrus.Entry, conf *conf.ObjectStorage) Storage {
 	if conf.Engine == "oss" {
-		return NewMinioStorage(logger, conf)
-	} else if conf.Engine == "minio" {
 		return NewOssStorage(logger, conf)
+	} else if conf.Engine == "minio" {
+		return NewMinioStorage(logger, conf)
 	} else {
 		panic("ObjectStorage Engine not supported")
 	}
