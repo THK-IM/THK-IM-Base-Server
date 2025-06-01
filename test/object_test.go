@@ -18,7 +18,7 @@ func TestMinioObject(t *testing.T) {
 		SK:       "L9lGsURsZzTZHeGAOyg5NkR8yRNYcZhrjrqrWqaY",
 		Region:   "us-east-1",
 	}
-	key := "session-1855133845351829506/1855133462856471628/1855139947246260224-fFIPsn6D.png"
+	key := "session-1855133845351829506/1855133462856471628/1855139947246260224-fFIPsn6D_thumb.png"
 	minioStorage := object.NewMinioStorage(loggerEntry, storageConf)
 	existed, err := minioStorage.KeyExists(key)
 	if err != nil {

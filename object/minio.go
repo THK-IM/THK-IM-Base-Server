@@ -88,11 +88,11 @@ func (m MinioStorage) GetDownloadUrl(key string) (*string, error) {
 
 func (m MinioStorage) DeleteObjectsByKeys(keys []string) error {
 	objectCh := make(chan minio.ObjectInfo)
-	defer close(objectCh)
 	go func() {
 		for _, key := range keys {
 			objectCh <- minio.ObjectInfo{Key: key}
 		}
+		close(objectCh)
 	}()
 	resultCh := m.client.RemoveObjects(context.Background(), m.conf.Bucket, objectCh, minio.RemoveObjectsOptions{})
 
