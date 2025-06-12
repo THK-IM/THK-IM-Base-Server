@@ -60,7 +60,7 @@ func (m MinioStorage) GetUploadParams(key string) (string, string, map[string]st
 		return "", "", nil, err
 	}
 	// Expires in 10 days.
-	err = policy.SetExpires(time.Now().UTC().Add(time.Minute * 5))
+	err = policy.SetExpires(time.Now().UTC().Add(time.Minute * 10))
 	if err != nil {
 		return "", "", nil, err
 	}
@@ -78,7 +78,7 @@ func (m MinioStorage) GetUploadParams(key string) (string, string, map[string]st
 }
 
 func (m MinioStorage) GetDownloadUrl(key string) (*string, error) {
-	preSignedURL, err := m.client.PresignedGetObject(context.Background(), m.conf.Bucket, key, time.Minute*100, nil)
+	preSignedURL, err := m.client.PresignedGetObject(context.Background(), m.conf.Bucket, key, time.Minute*10, nil)
 	if err != nil {
 		return nil, nil
 	}

@@ -46,7 +46,7 @@ func (o OssStorage) GetUploadParams(key string) (string, string, map[string]stri
 	// 构建Post Policy
 	utcTime := time.Now().UTC()
 	date := utcTime.Format("20060102")
-	expiration := utcTime.Add(1 * time.Hour)
+	expiration := utcTime.Add(10 * time.Minute)
 	policyMap := map[string]any{
 		"expiration": expiration.Format("2006-01-02T15:04:05.000Z"),
 		"conditions": []any{
