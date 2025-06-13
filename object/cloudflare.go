@@ -14,6 +14,7 @@ import (
 	"mime"
 	"os"
 	"path/filepath"
+	"regexp"
 	"time"
 )
 
@@ -46,23 +47,6 @@ func (s CloudFlareStorage) UploadObject(key string, path string) (*string, error
 }
 
 func (s CloudFlareStorage) GetUploadParams(key string) (string, string, map[string]string, error) {
-	//preSignClient := s3.NewPresignClient(s.client)
-	//output, err := preSignClient.PresignPostObject(context.Background(), &s3.PutObjectInput{
-	//	Bucket: aws.String(s.conf.Bucket),
-	//	Key:    aws.String(key),
-	//}, func(options *s3.PresignPostOptions) {
-	//	options.Expires = 10 * time.Minute
-	//})
-	//if err != nil {
-	//	return "", "", map[string]string{}, err
-	//} else {
-	//	if output == nil {
-	//		return "", "", map[string]string{}, errorx.ErrInternalServerError
-	//	} else {
-	//		return output.URL, "POST", output.Values, nil
-	//	}
-	//}
-
 	mimeType := mime.TypeByExtension(filepath.Ext(key))
 	preSignClient := s3.NewPresignClient(s.client)
 	output, err := preSignClient.PresignPutObject(context.Background(), &s3.PutObjectInput{
@@ -72,13 +56,15 @@ func (s CloudFlareStorage) GetUploadParams(key string) (string, string, map[stri
 	}, func(options *s3.PresignOptions) {
 		options.Expires = 10 * time.Minute
 	})
+	params := make(map[string]string)
 	if err != nil {
-		return "", "", map[string]string{}, err
+		return "", "", params, err
 	} else {
 		if output == nil {
-			return "", "", map[string]string{}, errorx.ErrInternalServerError
+			return "", "", params, errorx.ErrInternalServerError
 		} else {
-			return output.URL, "PUT", map[string]string{}, nil
+			params["Content-Type"] = mimeType
+			return output.URL, "PUT", params, nil
 		}
 	}
 }
@@ -94,7 +80,12 @@ func (s CloudFlareStorage) GetDownloadUrl(key string) (*string, error) {
 	})
 	url := ""
 	if err == nil && output != nil {
-		url = output.URL
+		if s.conf.Cdn != "" {
+			re := regexp.MustCompile(`https?://(?:www\.)?([^/]+)`)
+			url = re.ReplaceAllString(output.URL, s.conf.Cdn)
+		} else {
+			url = output.URL
+		}
 	}
 	return &url, err
 }

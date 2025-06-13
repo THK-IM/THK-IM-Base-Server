@@ -89,13 +89,13 @@ func TestS3Object(t *testing.T) {
 	logger := logrus.New()
 	loggerEntry := logrus.NewEntry(logger)
 	storageConf := &conf.ObjectStorage{
-		Endpoint: "xxxx",
-		Bucket:   "xxxx",
-		AK:       "xxxx",
-		SK:       "xxxx",
-		Region:   "auto",
+		//Endpoint: "xxxx",
+		//Bucket:   "xxxx",
+		//Cdn: "xxxx",
+		//AK:       "xxxx",
+		//SK:       "xxxx",
 	}
-	key := "test/android_upload.png"
+	key := "test/9999.png"
 	storage := object.NewCloudFlareStorage(loggerEntry, storageConf)
 
 	url, method, formData, errSign := storage.GetUploadParams(key)
@@ -104,10 +104,17 @@ func TestS3Object(t *testing.T) {
 		t.Fail()
 	}
 	fmt.Printf("curl -i -X %s ", method)
-	for k, v := range formData {
-		fmt.Printf("-F %s=%s ", k, v)
+	if method == "POST" {
+		for k, v := range formData {
+			fmt.Printf("-F %s=%s ", k, v)
+		}
+		fmt.Printf("-F file=@./etc/image1.png")
+	} else {
+		for k, v := range formData {
+			fmt.Printf("-H \"%s: %s\" ", k, v)
+		}
+		fmt.Printf("--data-binary \"@./etc/image1.png\"")
 	}
-	fmt.Printf("-F file=@./etc/image1.png")
 	fmt.Printf(" %s\n", url)
 	//url, errUpload := storage.UploadObject(key, "../etc/image1.png")
 	//if errUpload != nil {

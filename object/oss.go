@@ -14,6 +14,7 @@ import (
 	"io"
 	"log"
 	"os"
+	"regexp"
 	"strconv"
 	"time"
 )
@@ -108,9 +109,16 @@ func (o OssStorage) GetDownloadUrl(key string) (*string, error) {
 	signedURL, err := o.bucket.SignURL(key, oss.HTTPGet, 600)
 	if err != nil {
 		return nil, err
-	} else {
-		return &signedURL, nil
 	}
+
+	url := ""
+	if o.conf.Cdn != "" {
+		re := regexp.MustCompile(`https?://(?:www\.)?([^/]+)`)
+		url = re.ReplaceAllString(signedURL, o.conf.Cdn)
+	} else {
+		url = signedURL
+	}
+	return &url, nil
 }
 
 func (o OssStorage) DeleteObjectsByKeys(keys []string) error {

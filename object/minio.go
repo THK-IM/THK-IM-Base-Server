@@ -10,6 +10,7 @@ import (
 	"github.com/thk-im/thk-im-base-server/conf"
 	"net/http"
 	"os"
+	"regexp"
 	"strings"
 	"time"
 )
@@ -83,7 +84,14 @@ func (m MinioStorage) GetDownloadUrl(key string) (*string, error) {
 		return nil, nil
 	}
 	absolutPath := preSignedURL.String()
-	return &absolutPath, nil
+	url := ""
+	if m.conf.Cdn != "" {
+		re := regexp.MustCompile(`https?://(?:www\.)?([^/]+)`)
+		url = re.ReplaceAllString(absolutPath, m.conf.Cdn)
+	} else {
+		url = absolutPath
+	}
+	return &url, nil
 }
 
 func (m MinioStorage) DeleteObjectsByKeys(keys []string) error {

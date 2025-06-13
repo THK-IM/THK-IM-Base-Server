@@ -65,6 +65,7 @@ type (
 		Name     string `yaml:"Name"`
 		Engine   string `yaml:"Engine"`
 		Endpoint string `yaml:"Endpoint"`
+		Cdn      string `yaml:"Cdn"`
 		Bucket   string `yaml:"Bucket"`
 		AK       string `yaml:"AK"`
 		SK       string `yaml:"SK"`

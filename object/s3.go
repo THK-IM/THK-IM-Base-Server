@@ -18,6 +18,7 @@ import (
 	"mime"
 	"os"
 	"path/filepath"
+	"regexp"
 	"time"
 )
 
@@ -192,7 +193,12 @@ func (s S3Storage) GetDownloadUrl(key string) (*string, error) {
 	})
 	url := ""
 	if err == nil && output != nil {
-		url = output.URL
+		if s.conf.Cdn != "" {
+			re := regexp.MustCompile(`https?://(?:www\.)?([^/]+)`)
+			url = re.ReplaceAllString(output.URL, s.conf.Cdn)
+		} else {
+			url = output.URL
+		}
 	}
 	return &url, err
 }

@@ -61,6 +61,7 @@ ObjectStorage:
   Name: "minio"
   Engine: "minio"
   Endpoint: "http://minio.thkim.com"
+  Cdn: "http://minio.thkim.com"
   Bucket: "thk"
   AK: "7pwGcuomjng4cRKWYPNz"
   SK: "IzN7VrEKOGIPIEkhvQU6cJepu6bdrNC95BRYslwJ"
