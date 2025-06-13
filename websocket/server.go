@@ -166,7 +166,7 @@ func (server *WsServer) SendMessageToUsers(uIds []int64, msg string) (err error)
 		}
 	}
 	server.mutex.RUnlock()
-	server.logger.Info("SendMessageToUsers", uIds, len(allClients))
+	server.logger.Trace("SendMessageToUsers", uIds, len(allClients))
 	for _, c := range allClients {
 		e := c.WriteMessage(msg)
 		if e != nil {

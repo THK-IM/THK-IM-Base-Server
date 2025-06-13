@@ -63,7 +63,7 @@ func (w *WsClient) WriteMessage(msg string) error {
 			w.logger.Errorf("WriteMessage RemoveClient: %v %v", w.info.UId, err)
 			return err
 		} else {
-			w.logger.Infof("WriteMessage RemoveClient: %v %v", w.info.UId, "success")
+			w.logger.Tracef("WriteMessage RemoveClient: %v %v", w.info.UId, "success")
 			return nil
 		}
 	}
@@ -83,7 +83,7 @@ func (w *WsClient) WriteMessage(msg string) error {
 		w.logger.Errorf("WriteMessage: %v %v", msg, err)
 		return err
 	} else {
-		w.logger.Infof("WriteMessage: %v %v", msg, "success")
+		w.logger.Tracef("WriteMessage: %v %v", msg, "success")
 		return nil
 	}
 }
