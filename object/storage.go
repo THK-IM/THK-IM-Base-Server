@@ -19,6 +19,10 @@ func NewStorage(logger *logrus.Entry, conf *conf.ObjectStorage) Storage {
 		return NewOssStorage(logger, conf)
 	} else if conf.Engine == "minio" {
 		return NewMinioStorage(logger, conf)
+	} else if conf.Engine == "cloudflare" {
+		return NewCloudFlareStorage(logger, conf)
+	} else if conf.Engine == "s3" {
+		return NewS3Storage(logger, conf)
 	} else {
 		panic("ObjectStorage Engine not supported")
 	}
