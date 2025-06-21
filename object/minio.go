@@ -34,6 +34,9 @@ func (m MinioStorage) UploadObject(key string, path string) (*string, error) {
 	if err != nil {
 		return nil, err
 	}
+	defer func() {
+		_ = file.Close()
+	}()
 	fileInfo, errInfo := file.Stat()
 	if errInfo != nil {
 		return nil, errInfo

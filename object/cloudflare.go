@@ -31,6 +31,9 @@ func (s CloudFlareStorage) UploadObject(key string, path string) (*string, error
 	if err != nil {
 		return nil, err
 	}
+	defer func() {
+		_ = file.Close()
+	}()
 	mimeType := mime.TypeByExtension(filepath.Ext(path))
 	_, errPut := s.client.PutObject(context.Background(), &s3.PutObjectInput{
 		Bucket:      aws.String(s.conf.Bucket),
