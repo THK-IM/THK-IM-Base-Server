@@ -62,6 +62,9 @@ func Claims(crypto crypto.Crypto) gin.HandlerFunc {
 		device := context.Request.Header.Get(dto.Device)
 		claims.PutValue(dto.Device, device)
 
+		deviceId := context.Request.Header.Get(dto.Device)
+		claims.PutValue(dto.DeviceId, deviceId)
+
 		timeZone := context.Request.Header.Get(dto.TimeZone)
 		claims.PutValue(dto.TimeZone, timeZone)
 

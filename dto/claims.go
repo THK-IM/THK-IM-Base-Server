@@ -19,6 +19,7 @@ const (
 	Channel      = "Channel"  // channel
 	Version      = "Version"
 	OriginIP     = "Origin-IP"
+	DeviceId     = "DeviceId"
 
 	ClaimsKey = "Claims"
 )
@@ -45,6 +46,10 @@ func (m ThkClaims) GetLanguage() string {
 
 func (m ThkClaims) GetDevice() string {
 	return m.getValue(Device)
+}
+
+func (m ThkClaims) GetDeviceId() string {
+	return m.getValue(DeviceId)
 }
 
 func (m ThkClaims) GetTimeZone() string {

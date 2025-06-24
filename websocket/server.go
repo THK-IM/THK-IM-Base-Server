@@ -225,6 +225,7 @@ func (server *WsServer) onNewConn(ws *websocket.Conn) {
 	claims.PutValue(dto.JwtToken, ws.Request().Header.Get(dto.JwtToken))
 
 	claims.PutValue(dto.Device, ws.Request().Header.Get(dto.Device))
+	claims.PutValue(dto.DeviceId, ws.Request().Header.Get(dto.DeviceId))
 	claims.PutValue(dto.Platform, ws.Request().Header.Get(dto.Platform))
 
 	claims.PutValue(dto.TimeZone, ws.Request().Header.Get(dto.TimeZone))
