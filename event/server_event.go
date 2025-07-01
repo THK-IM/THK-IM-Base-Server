@@ -21,10 +21,11 @@ type (
 		ConnId     int64  `json:"conn_id"`
 		Platform   string `json:"platform"`
 		OnLineTime int64  `json:"on_line_time"`
+		Token      string `json:"token"`
 	}
 )
 
-func BuildUserOnlineEvent(nodeId int64, online bool, uid, connId, onLineTime int64, platform string) (map[string]interface{}, error) {
+func BuildUserOnlineEvent(nodeId int64, online bool, uid, connId, onLineTime int64, platform, token string) (map[string]interface{}, error) {
 	onlineBody := &OnlineBody{
 		NodeId:     nodeId,
 		Online:     online,
@@ -32,6 +33,7 @@ func BuildUserOnlineEvent(nodeId int64, online bool, uid, connId, onLineTime int
 		ConnId:     connId,
 		Platform:   platform,
 		OnLineTime: onLineTime,
+		Token:      token,
 	}
 	b, err := json.Marshal(onlineBody)
 	if err != nil {
