@@ -76,7 +76,7 @@ func ResponseBadRequest(ctx *gin.Context) {
 func ResponseInternalServerError(ctx *gin.Context, err error) {
 	var e *errorx.ErrorX
 	if errors.As(err, &e) {
-		if e.Code <= 5000000 {
+		if e.Code < 5000000 {
 			rsp := &ErrorResponse{
 				Code:    e.Code,
 				Message: e.Message,
