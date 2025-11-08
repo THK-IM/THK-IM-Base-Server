@@ -176,6 +176,8 @@ func (app *Context) Init(config *conf.Config) {
 	if len(config.BodyCipher) == 16 && len(config.BodyCipherIV) == 16 {
 		cipher = crypto.NewCrypto(config.BodyCipher, config.BodyCipherIV, config.BodyCipherWhiteList)
 	}
+	corsMiddleware := middleware.NewCors(config.AllowOrigins)
+	httpEngine.Use(corsMiddleware)
 	claimsMiddleware := middleware.Claims(cipher)
 	httpEngine.Use(claimsMiddleware)
 	dto.Localize = localize

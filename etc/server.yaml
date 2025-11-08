@@ -1,4 +1,6 @@
 Name: server
+AllowOrigins:
+  - "*.thk.com"
 Cipher: thk_im
 Host: 0.0.0.0
 Port: 10000

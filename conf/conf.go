@@ -133,6 +133,7 @@ type (
 
 	Config struct {
 		Name                string         `yaml:"Name"`
+		AllowOrigins        []string       `yaml:"AllowOrigins"`
 		Cipher              string         `yaml:"Cipher"`
 		BodyCipher          string         `yaml:"BodyCipher"`
 		BodyCipherIV        string         `yaml:"BodyCipherIV"`
