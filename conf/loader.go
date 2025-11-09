@@ -14,7 +14,15 @@ func getConfigConsul() (endpoint, key string) {
 	if *configConsulEndpoint != "" && *configConsulKey != "" {
 		return *configConsulEndpoint, *configConsulKey
 	} else {
-		return os.Getenv("config-consul-endpoint"), os.Getenv("config-consul-key")
+		consoleEndpoint := os.Getenv("config-consul-endpoint")
+		consulKey := os.Getenv("config-consul-key")
+		if consoleEndpoint == "" {
+			consoleEndpoint = os.Getenv("CONSUL_ENDPOINT")
+		}
+		if consulKey == "" {
+			consulKey = os.Getenv("CONSUL_KEY")
+		}
+		return consoleEndpoint, consulKey
 	}
 }
 
