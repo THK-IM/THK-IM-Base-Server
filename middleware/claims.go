@@ -54,57 +54,30 @@ func Claims(crypto crypto.Crypto) gin.HandlerFunc {
 		claims.PutValue(dto.SpanID, spanID)
 
 		clientIP := context.Request.Header.Get(dto.OriginIP)
-		if clientIP == "" {
-			clientIP = context.ClientIP()
-		}
 		claims.PutValue(dto.OriginIP, clientIP)
 
-		device := context.Request.Header.Get(dto.Device)
-		if device == "" {
-			device = context.Query(dto.Device)
-		}
+		device := getValueFromContext(context, dto.Device)
 		claims.PutValue(dto.Device, device)
 
-		deviceId := context.Request.Header.Get(dto.DeviceId)
-		if deviceId == "" {
-			deviceId = context.Query(dto.DeviceId)
-		}
+		deviceId := getValueFromContext(context, dto.DeviceId)
 		claims.PutValue(dto.DeviceId, deviceId)
 
-		timeZone := context.Request.Header.Get(dto.TimeZone)
-		if timeZone == "" {
-			timeZone = context.Query(dto.TimeZone)
-		}
+		timeZone := getValueFromContext(context, dto.TimeZone)
 		claims.PutValue(dto.TimeZone, timeZone)
 
-		platform := context.Request.Header.Get(dto.Platform)
-		if platform == "" {
-			platform = context.Query(dto.Platform)
-		}
+		platform := getValueFromContext(context, dto.Platform)
 		claims.PutValue(dto.Platform, platform)
 
-		channel := context.Request.Header.Get(dto.Channel)
-		if channel == "" {
-			channel = context.Query(dto.Channel)
-		}
+		channel := getValueFromContext(context, dto.Channel)
 		claims.PutValue(dto.Channel, channel)
 
-		version := context.Request.Header.Get(dto.Version)
-		if version == "" {
-			version = context.Query(dto.Version)
-		}
+		version := getValueFromContext(context, dto.Version)
 		claims.PutValue(dto.Version, version)
 
-		language := context.Request.Header.Get(dto.Language)
-		if language == "" {
-			language = context.Query(dto.Language)
-		}
+		language := getValueFromContext(context, dto.Language)
 		claims.PutValue(dto.Language, language)
 
-		token := context.Request.Header.Get(dto.JwtToken)
-		if token == "" {
-			token = context.Query(dto.JwtToken)
-		}
+		token := getValueFromContext(context, dto.JwtToken)
 		token = strings.ReplaceAll(token, "Bearer ", "")
 		token = strings.ReplaceAll(token, " ", "")
 		claims.PutValue(dto.JwtToken, token)
@@ -146,4 +119,15 @@ func Claims(crypto crypto.Crypto) gin.HandlerFunc {
 		}
 
 	}
+}
+
+func getValueFromContext(ctx *gin.Context, key string) string {
+	value := ctx.Query(key)
+	if value == "" {
+		value = ctx.Request.Header.Get(key)
+		if value == "" {
+			value, _ = ctx.Cookie(key)
+		}
+	}
+	return value
 }
