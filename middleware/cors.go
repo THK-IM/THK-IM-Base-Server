@@ -52,9 +52,9 @@ func NewCors(allowed []string) gin.HandlerFunc {
 		if allowedOrigin != "" {
 			c.Header("Access-Control-Allow-Origin", allowedOrigin)
 			c.Header("Access-Control-Allow-Credentials", "true")
-			c.Header("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With")
 			c.Header("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS")
 			c.Header("Access-Control-Expose-Headers", "*")
+			c.Header("Access-Control-Allow-Headers", "*") // <-- 允许所有请求头
 		}
 
 		if c.Request.Method == http.MethodOptions {
