@@ -69,7 +69,7 @@ func TestOssObject(t *testing.T) {
 	if !existed {
 		t.Failed()
 	} else {
-		downloadUrl, errGet := storage.GetDownloadUrl(key)
+		downloadUrl, errGet := storage.GetDownloadUrl(key, 600)
 		if errGet != nil {
 			fmt.Println("err: ", errGet.Error())
 			t.Failed()

@@ -105,8 +105,8 @@ func (o OssStorage) GetUploadParams(key string) (string, string, map[string]stri
 	return url, "POST", params, nil
 }
 
-func (o OssStorage) GetDownloadUrl(key string) (*string, error) {
-	signedURL, err := o.bucket.SignURL(key, oss.HTTPGet, 600)
+func (o OssStorage) GetDownloadUrl(key string, second int64) (*string, error) {
+	signedURL, err := o.bucket.SignURL(key, oss.HTTPGet, second)
 	if err != nil {
 		return nil, err
 	}

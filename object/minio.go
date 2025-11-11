@@ -81,8 +81,8 @@ func (m MinioStorage) GetUploadParams(key string) (string, string, map[string]st
 	return uploadUrl.String(), "POST", params, nil
 }
 
-func (m MinioStorage) GetDownloadUrl(key string) (*string, error) {
-	preSignedURL, err := m.client.PresignedGetObject(context.Background(), m.conf.Bucket, key, time.Minute*10, nil)
+func (m MinioStorage) GetDownloadUrl(key string, second int64) (*string, error) {
+	preSignedURL, err := m.client.PresignedGetObject(context.Background(), m.conf.Bucket, key, time.Duration(second)*time.Second, nil)
 	if err != nil {
 		return nil, nil
 	}

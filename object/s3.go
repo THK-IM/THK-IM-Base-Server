@@ -185,14 +185,14 @@ func (s S3Storage) GetUploadParams(key string) (string, string, map[string]strin
 	//}
 }
 
-func (s S3Storage) GetDownloadUrl(key string) (*string, error) {
+func (s S3Storage) GetDownloadUrl(key string, second int64) (*string, error) {
 	// 创建预签名客户端
 	preSignClient := s3.NewPresignClient(s.client)
 	output, err := preSignClient.PresignGetObject(context.TODO(), &s3.GetObjectInput{
 		Bucket: aws.String(s.conf.Bucket),
 		Key:    aws.String(key),
 	}, func(options *s3.PresignOptions) {
-		options.Expires = 10 * time.Minute
+		options.Expires = time.Duration(second) * time.Second
 	})
 	url := ""
 	if err == nil && output != nil {

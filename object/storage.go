@@ -8,7 +8,7 @@ import (
 type Storage interface {
 	UploadObject(key string, path string) (*string, error)
 	GetUploadParams(key string) (string, string, map[string]string, error)
-	GetDownloadUrl(key string) (*string, error)
+	GetDownloadUrl(key string, second int64) (*string, error)
 	DeleteObjectsByKeys(keys []string) error
 	KeyExists(key string) (bool, error)
 	KeyFileSize(key string) (int64, error)
