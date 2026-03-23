@@ -11,15 +11,15 @@ import (
 )
 
 const (
-	endpoint  = "192.168.1.4:9000"
-	thkImAk   = "SnK8hH6GvrTtlTETooKU"
-	thkImSk   = "EA3wI8dVMwC7yo5QU5hizRmwaSs7wdZSA0U7JBnC"
-	thkBucket = "thk"
+	endpoint    = "192.168.0.102:9000"
+	minioAK     = "clawtravel"
+	minioSk     = "clawtravel_pwd"
+	minioBucket = "clawtravel"
 )
 
 func TestMinioGenerateSignPostParams(t *testing.T) {
 	s3Client, err := minio.New(endpoint, &minio.Options{
-		Creds:  credentials.NewStaticV4(thkImAk, thkImSk, ""),
+		Creds:  credentials.NewStaticV4(minioAK, minioSk, ""),
 		Secure: false,
 		Region: "us-east-1",
 	})
@@ -29,12 +29,12 @@ func TestMinioGenerateSignPostParams(t *testing.T) {
 	}
 
 	policy := minio.NewPostPolicy()
-	err = policy.SetBucket(thkBucket)
+	err = policy.SetBucket(minioBucket)
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
 	}
-	err = policy.SetKey("user/sample-111s.mp3")
+	err = policy.SetKey("user/image1.png")
 	if err != nil {
 		fmt.Println(err)
 		t.Fail()
@@ -55,6 +55,6 @@ func TestMinioGenerateSignPostParams(t *testing.T) {
 	for k, v := range formData {
 		fmt.Printf("-F %s=%s ", k, v)
 	}
-	fmt.Printf("-F file=@/etc/sample-15s.mp3 ")
+	fmt.Printf("-F file=@./etc/image1.png ")
 	fmt.Printf("%s\n", url)
 }
