@@ -21,6 +21,7 @@ import (
 	"github.com/thk-im/thk-im-base-server/pool"
 	"github.com/thk-im/thk-im-base-server/snowflake"
 	"github.com/thk-im/thk-im-base-server/websocket"
+	"go.mongodb.org/mongo-driver/mongo"
 	"golang.org/x/text/language"
 	"gorm.io/gorm"
 	"net/http"
@@ -42,6 +43,7 @@ type Context struct {
 	filterFactory   filter.Factory
 	poolFactory     pool.Factory
 	database        *gorm.DB
+	mongoClient     *mongo.Client
 	snowflakeNode   *snowflake.Node
 	httpEngine      *gin.Engine
 	objectStorage   object.Storage
@@ -83,6 +85,10 @@ func (app *Context) RedisCache() *redis.Client {
 
 func (app *Context) Database() *gorm.DB {
 	return app.database
+}
+
+func (app *Context) MongoClient() *mongo.Client {
+	return app.mongoClient
 }
 
 func (app *Context) SnowflakeNode() *snowflake.Node {
@@ -178,7 +184,7 @@ func (app *Context) Init(config *conf.Config) {
 	}
 	corsMiddleware := middleware.NewCors(config.AllowOrigins)
 	httpEngine.Use(corsMiddleware)
-	claimsMiddleware := middleware.Claims(cipher)
+	claimsMiddleware := middleware.Claims(cipher, logger)
 	httpEngine.Use(claimsMiddleware)
 	dto.Localize = localize
 	app.httpEngine = httpEngine
@@ -191,6 +197,10 @@ func (app *Context) Init(config *conf.Config) {
 
 	if config.MysqlSource != nil {
 		app.database = loader.LoadMysql(logger, config.MysqlSource)
+	}
+
+	if config.MongoSource != nil {
+		app.mongoClient = loader.LoadMongo(logger, config.MongoSource)
 	}
 
 	if config.MsgQueue.Publishers != nil {

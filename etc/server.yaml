@@ -42,6 +42,13 @@ MysqlSource:
   MaxOpenConn: 20
   ConnMaxLifeTime: 3600
   ConnMaxIdleTime: 3600
+MongoSource:
+  Endpoint: ${MONGO_ENDPOINT}
+  Uri: "/?authSource=thk_im"
+  MaxIdleConn: 10
+  MaxOpenConn: 20
+  ConnMaxLifeTime: 3600
+  ConnMaxIdleTime: 3600
 Models:
   - Name: "session"
     Shards: 5

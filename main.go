@@ -1,5 +1,10 @@
 package main
 
+import (
+	"github.com/thk-im/thk-im-base-server/conf"
+	"github.com/thk-im/thk-im-base-server/server"
+)
+
 func main() {
 	//localize := i18n.NewLocalize("etc/localize")
 	//
@@ -18,19 +23,17 @@ func main() {
 	//text = localize.Get("text", "ja")
 	//fmt.Println(text)
 
-	// config := &conf.Config{}
-	// err := conf.Load("etc/server.yaml", config)
-	// if err != nil {
-	// 	panic(err)
-	// }
-	//
-	// srvContext := &server.Context{}
-	// srvContext.Init(config)
-	//
-	// for i := 0; i < 1000; i++ {
-	// 	srvContext.Logger().Info("logger message:", i)
-	// }
-	//
+	config := &conf.Config{}
+	err := conf.Load("etc/server.yaml", config)
+	if err != nil {
+		panic(err)
+	}
+
+	srvContext := &server.Context{}
+	srvContext.Init(config)
+
+	srvContext.StartServe()
+
 	// time.Sleep(time.Hour)
 
 	// keys := make([]string, 0)

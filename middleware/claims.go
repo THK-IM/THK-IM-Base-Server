@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"github.com/sirupsen/logrus"
 	"github.com/thk-im/thk-im-base-server/crypto"
 	"github.com/thk-im/thk-im-base-server/dto"
 	"io"
@@ -28,7 +29,7 @@ func (w *aesWriter) WriteString(s string) (int, error) {
 
 const ClaimsKey = dto.ClaimsKey
 
-func Claims(crypto crypto.Crypto) gin.HandlerFunc {
+func Claims(crypto crypto.Crypto, logger *logrus.Entry) gin.HandlerFunc {
 	return func(context *gin.Context) {
 		claims := dto.ThkClaims{}
 		traceID := context.Request.Header.Get(dto.TraceID)
@@ -90,12 +91,14 @@ func Claims(crypto crypto.Crypto) gin.HandlerFunc {
 			blw := &aesWriter{body: bytes.NewBufferString(""), ResponseWriter: context.Writer}
 			rawData, err := context.GetRawData()
 			if err != nil {
+				logger.Errorf("Claims GetRawData Error: %v", err)
 				context.AbortWithStatus(http.StatusInternalServerError)
 				return
 			}
 			if len(rawData) > 0 {
 				deData, errDecrypt := crypto.DecryptUriBody(context.Request.RequestURI, string(rawData))
 				if errDecrypt != nil {
+					logger.Errorf("Claims DecryptUriBody Error: %v", errDecrypt)
 					context.AbortWithStatus(http.StatusBadRequest)
 					return
 				}
@@ -110,6 +113,7 @@ func Claims(crypto crypto.Crypto) gin.HandlerFunc {
 			responseBytes := blw.body.Bytes()
 			crData, errCrypt := crypto.EncryptUriBody(context.Request.RequestURI, responseBytes)
 			if errCrypt != nil {
+				logger.Errorf("Claims EncryptUriBody Error: %v", errCrypt)
 				context.AbortWithStatus(http.StatusInternalServerError)
 				return
 			}

@@ -42,6 +42,15 @@ type (
 		Shards int64  `yaml:"Shards"`
 	}
 
+	MongoSource struct {
+		Endpoint        string `yaml:"Endpoint"`
+		Uri             string `yaml:"Uri"`
+		MaxIdleConn     int    `yaml:"MaxIdleConn"`
+		MaxOpenConn     int    `yaml:"MaxOpenConn"`
+		ConnMaxLifeTime int64  `yaml:"ConnMaxLifeTime"` // 单位:秒
+		ConnMaxIdleTime int64  `yaml:"ConnMaxIdleTime"` // 单位:秒
+	}
+
 	MysqlSource struct {
 		Endpoint        string `yaml:"Endpoint"`
 		Uri             string `yaml:"Uri"`
@@ -149,6 +158,7 @@ type (
 		Sdks                []Sdk          `yaml:"Sdks"`
 		Node                *Node          `yaml:"Node"`
 		ObjectStorage       *ObjectStorage `yaml:"ObjectStorage"`
+		MongoSource         *MongoSource   `yaml:"MongoSource"`
 		MysqlSource         *MysqlSource   `yaml:"MysqlSource"`
 		RedisSource         *RedisSource   `yaml:"RedisSource"`
 		Models              []Model        `yaml:"Models"`
