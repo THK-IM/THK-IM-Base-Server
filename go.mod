@@ -1,8 +1,8 @@
 module github.com/thk-im/thk-im-base-server
 
-go 1.23.0
+go 1.24.0
 
-toolchain go1.23.1
+toolchain go1.24.4
 
 require (
 	github.com/aliyun/aliyun-oss-go-sdk v3.0.2+incompatible
@@ -20,14 +20,14 @@ require (
 	github.com/lestrrat-go/file-rotatelogs v2.4.0+incompatible
 	github.com/minio/minio-go/v7 v7.0.92
 	github.com/prometheus/client_golang v1.18.0
-	github.com/redis/go-redis/v9 v9.4.0
+	github.com/redis/go-redis/v9 v9.7.3
 	github.com/segmentio/kafka-go v0.4.47
 	github.com/sirupsen/logrus v1.9.3
 	go.mongodb.org/mongo-driver v1.17.9
-	golang.org/x/crypto v0.36.0
+	golang.org/x/crypto v0.45.0
 	golang.org/x/exp v0.0.0-20230817173708-d852ddb80c63
-	golang.org/x/net v0.38.0
-	golang.org/x/text v0.23.0
+	golang.org/x/net v0.47.0
+	golang.org/x/text v0.31.0
 	gopkg.in/yaml.v3 v3.0.1
 	gorm.io/driver/mysql v1.5.2
 	gorm.io/gorm v1.30.0
@@ -115,8 +115,8 @@ require (
 	go.opentelemetry.io/otel/metric v1.28.0 // indirect
 	go.opentelemetry.io/otel/trace v1.28.0 // indirect
 	golang.org/x/arch v0.8.0 // indirect
-	golang.org/x/sync v0.12.0 // indirect
-	golang.org/x/sys v0.31.0 // indirect
+	golang.org/x/sync v0.18.0 // indirect
+	golang.org/x/sys v0.38.0 // indirect
 	golang.org/x/time v0.6.0 // indirect
 	google.golang.org/protobuf v1.34.1 // indirect
 )
