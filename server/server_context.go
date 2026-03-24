@@ -4,6 +4,13 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"net/http"
+	"os"
+	"os/signal"
+	"strings"
+	"syscall"
+	"time"
+
 	"github.com/gin-gonic/gin"
 	"github.com/redis/go-redis/v9"
 	"github.com/sirupsen/logrus"
@@ -21,15 +28,9 @@ import (
 	"github.com/thk-im/thk-im-base-server/pool"
 	"github.com/thk-im/thk-im-base-server/snowflake"
 	"github.com/thk-im/thk-im-base-server/websocket"
-	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/v2/mongo"
 	"golang.org/x/text/language"
 	"gorm.io/gorm"
-	"net/http"
-	"os"
-	"os/signal"
-	"strings"
-	"syscall"
-	"time"
 )
 
 type Context struct {

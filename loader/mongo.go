@@ -7,9 +7,9 @@ import (
 
 	"github.com/sirupsen/logrus"
 	"github.com/thk-im/thk-im-base-server/conf"
-	"go.mongodb.org/mongo-driver/event"
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.mongodb.org/mongo-driver/v2/event"
+	"go.mongodb.org/mongo-driver/v2/mongo"
+	"go.mongodb.org/mongo-driver/v2/mongo/options"
 )
 
 type MongoLogger struct {
@@ -53,7 +53,7 @@ func LoadMongo(entry *logrus.Entry, source *conf.MongoSource) *mongo.Client {
 		SetMaxConnIdleTime(time.Duration(source.ConnMaxIdleTime) * time.Second).
 		SetMonitor(monitor)
 
-	client, err := mongo.Connect(ctx, clientOpts)
+	client, err := mongo.Connect(clientOpts)
 	if err != nil {
 		panic(err)
 	}
