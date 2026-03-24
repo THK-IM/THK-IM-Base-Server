@@ -2,9 +2,10 @@ package conf
 
 import (
 	"fmt"
+	"os"
+
 	consul "github.com/hashicorp/consul/api"
 	"gopkg.in/yaml.v3"
-	"os"
 )
 
 const (
@@ -38,7 +39,8 @@ type (
 	}
 
 	Model struct {
-		Name   string `yaml:"Name""`
+		Name   string `yaml:"Name"`
+		DbName string `yaml:"DbName"`
 		Shards int64  `yaml:"Shards"`
 	}
 
