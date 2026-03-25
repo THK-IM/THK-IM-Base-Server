@@ -1,11 +1,12 @@
 package middleware
 
 import (
+	"net"
+	"strings"
+
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 	"github.com/thk-im/thk-im-base-server/dto"
-	"net"
-	"strings"
 )
 
 func WhiteIpAuth(ipWhiteList string, logger *logrus.Entry) gin.HandlerFunc {
@@ -26,14 +27,26 @@ func WhiteIpAuth(ipWhiteList string, logger *logrus.Entry) gin.HandlerFunc {
 
 func isIpValid(clientIp string, whiteIpList []string) bool {
 	ip := net.ParseIP(clientIp)
+	if ip == nil {
+		return false
+	}
+
 	for _, whiteIp := range whiteIpList {
+
+		// 1️⃣ 先尝试 CIDR
 		_, ipNet, err := net.ParseCIDR(whiteIp)
-		if err != nil {
-			return false
+		if err == nil {
+			if ipNet.Contains(ip) {
+				return true
+			}
+			continue
 		}
-		if ipNet.Contains(ip) {
+
+		// 2️⃣ 再尝试单 IP
+		if ip.Equal(net.ParseIP(whiteIp)) {
 			return true
 		}
 	}
+
 	return false
 }
