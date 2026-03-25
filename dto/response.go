@@ -2,10 +2,11 @@ package dto
 
 import (
 	"errors"
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"github.com/thk-im/thk-im-base-server/errorx"
 	"github.com/thk-im/thk-im-base-server/i18n"
-	"net/http"
 )
 
 var Localize i18n.Localize
@@ -76,23 +77,7 @@ func ResponseBadRequest(ctx *gin.Context) {
 func ResponseInternalServerError(ctx *gin.Context, err error) {
 	var e *errorx.ErrorX
 	if errors.As(err, &e) {
-		if e.Code < 5000000 {
-			rsp := &ErrorResponse{
-				Code:    e.Code,
-				Message: e.Message,
-			}
-			claims := ctx.MustGet(ClaimsKey).(ThkClaims)
-			rsp.Localize(claims.GetLanguage())
-			ctx.JSON(http.StatusBadRequest, rsp)
-		} else {
-			rsp := &ErrorResponse{
-				Code:    e.Code,
-				Message: e.Message,
-			}
-			claims := ctx.MustGet(ClaimsKey).(ThkClaims)
-			rsp.Localize(claims.GetLanguage())
-			ctx.JSON(http.StatusInternalServerError, rsp)
-		}
+		ResponseErrorX(ctx, *e)
 	} else {
 		e = errorx.ErrInternalServerError
 		rsp := &ErrorResponse{
@@ -115,4 +100,24 @@ func ResponseSuccess(ctx *gin.Context, data interface{}) {
 
 func Redirect302(ctx *gin.Context, url string) {
 	ctx.Redirect(302, url)
+}
+
+func ResponseErrorX(ctx *gin.Context, err errorx.ErrorX) {
+	if err.Code < 5000000 {
+		rsp := &ErrorResponse{
+			Code:    err.Code,
+			Message: err.Message,
+		}
+		claims := ctx.MustGet(ClaimsKey).(ThkClaims)
+		rsp.Localize(claims.GetLanguage())
+		ctx.JSON(http.StatusBadRequest, rsp)
+	} else {
+		rsp := &ErrorResponse{
+			Code:    err.Code,
+			Message: err.Message,
+		}
+		claims := ctx.MustGet(ClaimsKey).(ThkClaims)
+		rsp.Localize(claims.GetLanguage())
+		ctx.JSON(http.StatusInternalServerError, rsp)
+	}
 }
