@@ -90,6 +90,10 @@ func ResponseInternalServerError(ctx *gin.Context, err error) {
 	}
 }
 
+func ResponseError(ctx *gin.Context, err error) {
+	ResponseInternalServerError(ctx, err)
+}
+
 func ResponseSuccess(ctx *gin.Context, data interface{}) {
 	if data == nil {
 		ctx.Status(http.StatusOK)
