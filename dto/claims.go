@@ -2,6 +2,7 @@ package dto
 
 import (
 	"encoding/json"
+
 	"github.com/sirupsen/logrus"
 )
 
@@ -80,9 +81,8 @@ func (m ThkClaims) getValue(key string) string {
 	value, ok := m[key].(string)
 	if ok {
 		return value
-	} else {
-		return ""
 	}
+	return ""
 }
 
 func (m ThkClaims) ToJsonString() string {
@@ -91,6 +91,10 @@ func (m ThkClaims) ToJsonString() string {
 		return ""
 	}
 	return string(b)
+}
+
+func (m ThkClaims) GetValue(key string) string {
+	return m.getValue(key)
 }
 
 func ThkClaimsFromJsonString(js string) (ThkClaims, error) {
