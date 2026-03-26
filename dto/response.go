@@ -91,7 +91,18 @@ func ResponseInternalServerError(ctx *gin.Context, err error) {
 }
 
 func ResponseError(ctx *gin.Context, err error) {
-	ResponseInternalServerError(ctx, err)
+	var e *errorx.ErrorX
+	if errors.As(err, &e) {
+		ResponseErrorX(ctx, *e)
+	} else {
+		rsp := &ErrorResponse{
+			Code:    4000000,
+			Message: err.Error(),
+		}
+		claims := ctx.MustGet(ClaimsKey).(ThkClaims)
+		rsp.Localize(claims.GetLanguage())
+		ctx.JSON(http.StatusInternalServerError, rsp)
+	}
 }
 
 func ResponseSuccess(ctx *gin.Context, data interface{}) {
