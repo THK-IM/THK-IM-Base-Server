@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/thk-im/thk-im-base-server/errorx"
 	"github.com/thk-im/thk-im-base-server/i18n"
+	"github.com/thk-im/thk-im-base-server/utils"
 )
 
 var Localize i18n.Localize
@@ -106,7 +107,7 @@ func ResponseError(ctx *gin.Context, err error) {
 }
 
 func ResponseSuccess(ctx *gin.Context, data interface{}) {
-	if data == nil {
+	if utils.IsNil(data) {
 		ctx.Status(http.StatusOK)
 	} else {
 		ctx.JSON(http.StatusOK, data)
