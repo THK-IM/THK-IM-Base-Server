@@ -3,15 +3,16 @@ package middleware
 import (
 	"bytes"
 	"fmt"
+	"io"
+	"net/http"
+	"strconv"
+	"strings"
+
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
 	"github.com/thk-im/thk-im-base-server/crypto"
 	"github.com/thk-im/thk-im-base-server/dto"
-	"io"
-	"net/http"
-	"strconv"
-	"strings"
 )
 
 type aesWriter struct {
@@ -53,6 +54,12 @@ func Claims(crypto crypto.Crypto, logger *logrus.Entry) gin.HandlerFunc {
 		}
 		claims.PutValue(dto.ParentSpanID, parentSpanID)
 		claims.PutValue(dto.SpanID, spanID)
+
+		requestHost := context.Request.Header.Get(dto.RequestHost)
+		if requestHost == "" {
+			requestHost = hostFromContext(context)
+		}
+		claims.PutValue(dto.RequestHost, requestHost)
 
 		clientIP := context.Request.Header.Get(dto.OriginIP)
 		claims.PutValue(dto.OriginIP, clientIP)
@@ -134,4 +141,23 @@ func getValueFromContext(ctx *gin.Context, key string) string {
 		}
 	}
 	return value
+}
+
+func hostFromContext(ctx *gin.Context) string {
+	// 1. 优先从代理头获取
+	scheme := ctx.GetHeader("X-Forwarded-Proto")
+	if scheme == "" {
+		if ctx.Request.TLS != nil {
+			scheme = "https"
+		} else {
+			scheme = "http"
+		}
+	}
+
+	host := ctx.GetHeader("X-Forwarded-Host")
+	if host == "" {
+		host = ctx.Request.Host
+	}
+
+	return scheme + "://" + host
 }

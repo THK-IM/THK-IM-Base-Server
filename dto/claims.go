@@ -21,6 +21,7 @@ const (
 	Version      = "Version"
 	OriginIP     = "Origin-IP"
 	DeviceId     = "DeviceId"
+	RequestHost  = "RequestHost"
 
 	ClaimsKey = "Claims"
 )
@@ -75,6 +76,10 @@ func (m ThkClaims) GetOriginIp() string {
 
 func (m ThkClaims) GetToken() string {
 	return m.getValue(JwtToken)
+}
+
+func (m ThkClaims) GetRequestHost() string {
+	return m.getValue(RequestHost)
 }
 
 func (m ThkClaims) getValue(key string) string {
