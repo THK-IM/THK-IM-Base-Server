@@ -9,6 +9,8 @@ import (
 	"strconv"
 	"sync"
 	"time"
+
+	"github.com/thk-im/thk-im-base-server/utils"
 )
 
 var (
@@ -158,8 +160,8 @@ func (n *Node) Generate() ID {
 }
 
 // Int64 returns an int64 of the snowflake ID
-func (f ID) Int64() int64 {
-	return int64(f)
+func (f *ID) Int64() int64 {
+	return int64(*f)
 }
 
 // ParseInt64 converts an int64 into a snowflake ID
@@ -168,8 +170,8 @@ func ParseInt64(id int64) ID {
 }
 
 // String returns a string of the snowflake ID
-func (f ID) String() string {
-	return strconv.FormatInt(int64(f), 10)
+func (f *ID) String() string {
+	return strconv.FormatInt(int64(*f), 10)
 }
 
 // ParseString converts a string into a snowflake ID
@@ -180,8 +182,8 @@ func ParseString(id string) (ID, error) {
 }
 
 // Base2 returns a string base2 of the snowflake ID
-func (f ID) Base2() string {
-	return strconv.FormatInt(int64(f), 2)
+func (f *ID) Base2() string {
+	return strconv.FormatInt(int64(*f), 2)
 }
 
 // ParseBase2 converts a Base2 string into a snowflake ID
@@ -194,18 +196,18 @@ func ParseBase2(id string) (ID, error) {
 // to base58, allowing it to create an even smaller result string.
 // NOTE: There are many different base32 implementations so becareful when
 // doing any interoperation.
-func (f ID) Base32() string {
+func (f *ID) Base32() string {
 
-	if f < 32 {
-		return string(encodeBase32Map[f])
+	if *f < 32 {
+		return string(encodeBase32Map[*f])
 	}
 
 	b := make([]byte, 0, 12)
-	for f >= 32 {
-		b = append(b, encodeBase32Map[f%32])
-		f /= 32
+	for *f >= 32 {
+		b = append(b, encodeBase32Map[*f%32])
+		*f /= 32
 	}
-	b = append(b, encodeBase32Map[f])
+	b = append(b, encodeBase32Map[*f])
 
 	for x, y := 0, len(b)-1; x < y; x, y = x+1, y-1 {
 		b[x], b[y] = b[y], b[x]
@@ -232,8 +234,14 @@ func ParseBase32(b []byte) (ID, error) {
 }
 
 // Base36 returns a base36 string of the snowflake ID
-func (f ID) Base36() string {
-	return strconv.FormatInt(int64(f), 36)
+func (f *ID) Base36() string {
+	return strconv.FormatInt(int64(*f), 36)
+}
+
+// Base36Reverse returns a base36 Reverse string of the snowflake ID
+func (f *ID) Base36Reverse() string {
+	id := f.Base36()
+	return utils.ReverseString(id)
 }
 
 // ParseBase36 converts a Base36 string into a snowflake ID
@@ -243,24 +251,30 @@ func ParseBase36(id string) (ID, error) {
 }
 
 // Base58 returns a base58 string of the snowflake ID
-func (f ID) Base58() string {
+func (f *ID) Base58() string {
 
-	if f < 58 {
-		return string(encodeBase58Map[f])
+	if *f < 58 {
+		return string(encodeBase58Map[*f])
 	}
 
 	b := make([]byte, 0, 11)
-	for f >= 58 {
-		b = append(b, encodeBase58Map[f%58])
-		f /= 58
+	for *f >= 58 {
+		b = append(b, encodeBase58Map[*f%58])
+		*f /= 58
 	}
-	b = append(b, encodeBase58Map[f])
+	b = append(b, encodeBase58Map[*f])
 
 	for x, y := 0, len(b)-1; x < y; x, y = x+1, y-1 {
 		b[x], b[y] = b[y], b[x]
 	}
 
 	return string(b)
+}
+
+// Base58Reverse returns a base36 Reverse string of the snowflake ID
+func (f *ID) Base58Reverse() string {
+	id := f.Base58()
+	return utils.ReverseString(id)
 }
 
 // ParseBase58 parses a base58 []byte into a snowflake ID
@@ -279,8 +293,14 @@ func ParseBase58(b []byte) (ID, error) {
 }
 
 // Base64 returns a base64 string of the snowflake ID
-func (f ID) Base64() string {
+func (f *ID) Base64() string {
 	return base64.StdEncoding.EncodeToString(f.Bytes())
+}
+
+// Base64Reverse returns a base36 Reverse string of the snowflake ID
+func (f *ID) Base64Reverse() string {
+	id := f.Base64()
+	return utils.ReverseString(id)
 }
 
 // ParseBase64 converts a base64 string into a snowflake ID
@@ -294,7 +314,7 @@ func ParseBase64(id string) (ID, error) {
 }
 
 // Bytes returns a byte slice of the snowflake ID
-func (f ID) Bytes() []byte {
+func (f *ID) Bytes() []byte {
 	return []byte(f.String())
 }
 
@@ -306,9 +326,9 @@ func ParseBytes(id []byte) (ID, error) {
 
 // IntBytes returns an array of bytes of the snowflake ID, encoded as a
 // big endian integer.
-func (f ID) IntBytes() [8]byte {
+func (f *ID) IntBytes() [8]byte {
 	var b [8]byte
-	binary.BigEndian.PutUint64(b[:], uint64(f))
+	binary.BigEndian.PutUint64(b[:], uint64(*f))
 	return b
 }
 
@@ -320,27 +340,27 @@ func ParseIntBytes(id [8]byte) ID {
 
 // Time returns an int64 unix timestamp in milliseconds of the snowflake ID time
 // DEPRECATED: the below function will be removed in a future release.
-func (f ID) Time() int64 {
-	return (int64(f) >> timeShift) + Epoch
+func (f *ID) Time() int64 {
+	return (int64(*f) >> timeShift) + Epoch
 }
 
 // Node returns an int64 of the snowflake ID node number
 // DEPRECATED: the below function will be removed in a future release.
-func (f ID) Node() int64 {
-	return int64(f) & nodeMask >> nodeShift
+func (f *ID) Node() int64 {
+	return int64(*f) & nodeMask >> nodeShift
 }
 
 // Step returns an int64 of the snowflake step (or sequence) number
 // DEPRECATED: the below function will be removed in a future release.
-func (f ID) Step() int64 {
-	return int64(f) & stepMask
+func (f *ID) Step() int64 {
+	return int64(*f) & stepMask
 }
 
 // MarshalJSON returns a json byte array string of the snowflake ID.
-func (f ID) MarshalJSON() ([]byte, error) {
+func (f *ID) MarshalJSON() ([]byte, error) {
 	buff := make([]byte, 0, 22)
 	buff = append(buff, '"')
-	buff = strconv.AppendInt(buff, int64(f), 10)
+	buff = strconv.AppendInt(buff, int64(*f), 10)
 	buff = append(buff, '"')
 	return buff, nil
 }
