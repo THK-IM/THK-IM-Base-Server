@@ -97,7 +97,7 @@ func ResponseError(ctx *gin.Context, err error) {
 		ResponseErrorX(ctx, *e)
 	} else {
 		rsp := &ErrorResponse{
-			Code:    4000000,
+			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
 		}
 		claims := ctx.MustGet(ClaimsKey).(ThkClaims)
