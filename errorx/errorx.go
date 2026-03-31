@@ -3,9 +3,10 @@ package errorx
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/go-resty/resty/v2"
 	"net/http"
 	"strings"
+
+	"github.com/go-resty/resty/v2"
 )
 
 type ErrorX struct {
@@ -33,6 +34,10 @@ func NewErrorXFromResp(resp *resty.Response) *ErrorX {
 
 func NewErrorX(code int, message string) *ErrorX {
 	return &ErrorX{Code: code, Message: message}
+}
+
+func NewParamsError(message string) *ErrorX {
+	return &ErrorX{Code: 400000, Message: message}
 }
 
 func New(message string) *ErrorX {
