@@ -3,14 +3,24 @@ package loader
 import (
 	"context"
 	"fmt"
+	"reflect"
+	"strings"
 	"time"
 
 	"github.com/sirupsen/logrus"
 	"github.com/thk-im/thk-im-base-server/conf"
+	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/event"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 	"go.mongodb.org/mongo-driver/v2/mongo/options"
 )
+
+type utf8StringEncoder struct{}
+
+func (utf8StringEncoder) EncodeValue(ec bson.EncodeContext, vw bson.ValueWriter, val reflect.Value) error {
+	clean := strings.ToValidUTF8(val.String(), "?")
+	return vw.WriteString(clean)
+}
 
 type MongoLogger struct {
 	logger *logrus.Entry
@@ -46,12 +56,15 @@ func LoadMongo(entry *logrus.Entry, source *conf.MongoSource) *mongo.Client {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
+	registry := bson.NewRegistry()
+	registry.RegisterTypeEncoder(reflect.TypeOf(""), utf8StringEncoder{})
+
 	clientOpts := options.Client().
 		ApplyURI(fmt.Sprintf("%s%s", source.Endpoint, source.Uri)).
 		SetMaxPoolSize(uint64(source.MaxOpenConn)).
 		SetMinPoolSize(uint64(source.MaxIdleConn)).
 		SetMaxConnIdleTime(time.Duration(source.ConnMaxIdleTime) * time.Second).
-		SetMonitor(monitor)
+		SetMonitor(monitor).SetRegistry(registry)
 
 	client, err := mongo.Connect(clientOpts)
 	if err != nil {
